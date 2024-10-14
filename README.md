@@ -31,8 +31,8 @@ To customize the website, you can:
 ```
 📦booking-form
  ┣ 📜index.html           # Main HTML file
- ┣ 📜index.html           # Main CSS file
- ┗ 📜index.html           # Main JAVASCRIPT file
+ ┣ 📜styles.css           # Main CSS file
+ ┗ 📜app.js               # Main JAVASCRIPT file
 ```
 ## How to Contribute
 
