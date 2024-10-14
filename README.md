@@ -2,7 +2,7 @@
 
 This is a simple static website hosted on GitHub Pages. The website contains a form, links, and other interactive elements. You can view the live site at:
 
-**[Live Demo](https://<your-github-username>.github.io/<repository-name>)**
+**[Live Demo](https://zaid-dildar.github.io/booking-form/)**
 
 ## Features
 
@@ -15,7 +15,7 @@ This is a simple static website hosted on GitHub Pages. The website contains a f
 
 ### Viewing the Website
 
-Simply visit the [live site](https://<your-github-username>.github.io/<repository-name>), and you'll be able to view the full HTML page, complete with links and interactive elements.
+Simply visit the [live site](https://zaid-dildar.github.io/booking-form/), and you'll be able to view the full HTML page, complete with links and interactive elements.
 
 ### Customization
 
