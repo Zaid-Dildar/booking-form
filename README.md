@@ -22,7 +22,7 @@ Simply visit the [live site](https://zaid-dildar.github.io/booking-form/), and y
 To customize the website, you can:
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-github-username>/<repository-name>.git
+   git clone https://github.com/Zaid-Dildar/booking-form.git
 2. Make changes to the HTML, CSS, or JavaScript files locally.
 3. Push the updates back to the repository, and GitHub Pages will automatically reflect your changes.
 
