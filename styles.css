@@ -10,6 +10,18 @@ body {
   padding: 20px;
 }
 
+h1 {
+  font-size: 48px;
+  color: #daa520;
+  text-align: center;
+}
+
+.description {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
 .form-container {
   max-width: 800px;
   margin: 0 auto;
@@ -165,6 +177,9 @@ body {
 }
 
 @media only screen and (max-width: 991px) {
+  h1 {
+    font-size: 32px;
+  }
   .form-row {
     display: block;
   }
