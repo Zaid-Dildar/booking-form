@@ -5,7 +5,7 @@ node_modules/
 .env
 
 #Vercel
-public/.vercel
+.vercel
 
 # Local Api
 api/index.js
