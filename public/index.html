@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservation Form</title>
+    <!-- ICONS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Swiper CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css"
+    />
+    <!-- Font CSS -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- MAPBOX -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Book Your Ride</h1>
+    <p class="description">
+      Reserve your luxurious airport limo service for a comfortable and timely
+      travel experience today.
+    </p>
+    <div class="form-container">
+      <form id="reservation-form">
+        <!-- Row 1: First Name and Last Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First Name <span>*</span></label>
+            <input type="text" id="first-name" name="first-name" />
+            <div class="error-message" id="first-name-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="last-name">Last Name <span>*</span></label>
+            <input type="text" id="last-name" name="last-name" />
+            <div class="error-message" id="last-name-error"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: Email and Phone -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email <span>*</span></label>
+            <input type="email" id="email" name="email" />
+            <div class="error-message" id="email-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone <span>*</span></label>
+            <input type="tel" id="phone" name="phone" />
+            <div class="error-message" id="phone-error"></div>
+          </div>
+        </div>
+
+        <!-- Row 3: Passengers and Bags -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="passengers">No. of Passengers <span>*</span></label>
+            <input type="number" id="passengers" name="passengers" />
+            <div class="error-message" id="passengers-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="bags">No. of Bags <span>*</span></label>
+            <input type="number" id="bags" name="bags" />
+            <div class="error-message" id="bags-error"></div>
+          </div>
+        </div>
+
+        <!-- Row 4: Flight No. -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="flight-no">Flight No. (Optional)</label>
+            <input type="text" id="flight-no" name="flight-no" />
+          </div>
+        </div>
+
+        <!-- Date and Time Picker -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pickup-date">Pickup Date <span>*</span></label>
+            <input type="date" id="pickup-date" name="pickup-date" />
+            <div class="error-message" id="pickup-date-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="pickup-time">Pickup Time <span>*</span></label>
+            <input type="time" id="pickup-time" name="pickup-time" />
+            <div class="error-message" id="pickup-time-error"></div>
+          </div>
+        </div>
+
+        <!-- Row 5: Pickup Location -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pickup">Pickup Location <span>*</span></label>
+            <input id="pickup" type="text" autocomplete="off" />
+            <div id="pickup-suggestions" class="suggestions"></div>
+            <div class="error-message" id="pickup-error"></div>
+          </div>
+        </div>
+
+        <!-- Row 6: Dropoff Location -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dropoff">Dropoff Location <span>*</span></label>
+            <input
+              type="text"
+              id="dropoff"
+              name="dropoff-location"
+              autocomplete="off"
+            />
+            <div id="dropoff-suggestions" class="suggestions"></div>
+            <div class="error-message" id="dropoff-error"></div>
+          </div>
+        </div>
+
+        <!-- Mapbox Map -->
+        <div class="map-container" id="map">
+          <!-- Distance and Time Info -->
+          <div class="map-overlay" id="directions-info">
+            Distance: N/A | Duration: N/A
+          </div>
+          <!-- Get Directions Button -->
+          <button class="directions-btn" id="directions-button" type="button">
+            View Route
+          </button>
+        </div>
+
+        <!-- Car Selection Slider -->
+        <div class="error-message" id="car-option-error"></div>
+        <h2>Select Vehicle</h2>
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-1"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="Sprinter"
+                />
+                <p>
+                  <strong>Sprinter</strong>
+                  <span><i class="fas fa-user" title="Passengers"></i> 11 ,
+                  <i class="fas fa-suitcase" title="Bags"></i> 11</span>
+                  <span>Price - $325.00</span>
+                </p>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-2"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="Stretch SUV"
+                />
+                <p>
+                  <strong>Stretch SUV</strong>
+                  <span><i class="fas fa-user" title="Passengers"></i> 10 ,
+                  <i class="fas fa-suitcase" title="Bags"></i> 10</span>
+                  <span>Price - $349.00</span>
+                </p>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-3"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="SUV"
+                />
+                <p>
+                  <strong>SUV</strong>
+                  <span><i class="fas fa-user" title="Passengers"></i> 6 ,
+                  <i class="fas fa-suitcase" title="Bags"></i> 4</span>
+                  <spanPrice ->$120.00</span>
+                </p>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-4"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="Cadillac Escalade"
+                />
+                <p>
+                  <strong>Cadillac Escalade SUV</strong>
+                  <span><i class="fas fa-user" title="Passengers"></i> 6 ,
+                  <i class="fas fa-suitcase" title="Bags"></i> 6</span>
+                  <spanPrice ->$210.00</span>
+                </p>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-5"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="Class Mercedes"
+                />
+                <p>
+                  <strong>Class Mercedes</strong>
+                  <span><i class="fas fa-user" title="Passengers"></i> 3 ,
+                  <i class="fas fa-suitcase" title="Bags"></i> 3</span>
+                  <spanPrice ->$175.00</span>
+                </p>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div
+                class="car-option"
+                id="car-6"
+              >
+                <img
+                  src="https://tse1.mm.bing.net/th?id=OIP.XL0eSVAxrSPo-QPmrJDy1QHaEK&pid=Api"
+                  alt="Sedan"
+                />
+                <p>
+                  <strong>Sedan</strong>
+                  <span
+                    ><i class="fas fa-user" title="Passengers"></i> 2 ,
+                    <i class="fas fa-suitcase" title="Bags"></i> 2</span>
+                  <span>Price - $85.00</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Pagination -->
+          <div class="swiper-pagination"></div>
+
+          <!-- Add Navigation -->
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+
+        <!--  Additional Information -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="additional-info"
+              >Additional Information (Optional)</label
+            >
+            <textarea
+              id="additional-info"
+              name="additional-info"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn">Reserve</button>
+      </form>
+    </div>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+    <script>
+      const swiper = new Swiper(".swiper", {
+        slidesPerView: 1, // Number of slides to show on desktop
+        slidesPerGroup: 1, // Number of slides to scroll
+        spaceBetween: 10, // Space between slides
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          991: {
+            slidesPerView: 3, // Show 1 slide on mobile
+          },
+        },
+      });
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>

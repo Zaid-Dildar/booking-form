@@ -1,0 +1,226 @@
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: #1c1c1c;
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 48px;
+  color: #daa520;
+  text-align: center;
+}
+
+.description {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #2c2c2c;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group label {
+  display: inline-block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group span {
+  color: red;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: black;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: black;
+}
+
+.suggestions {
+  background-color: #daa520;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+.suggestion-item:hover {
+  background-color: #a67c00;
+}
+
+.map-container {
+  position: relative;
+  margin: 20px 0;
+  height: 300px;
+  border: 1px solid #ccc;
+}
+
+.map-overlay {
+  position: absolute;
+  z-index: 10;
+  top: 10px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#directions-info {
+  margin-top: 10px;
+}
+
+.directions-btn {
+  position: absolute;
+  z-index: 10;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background-color: #daa520;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.directions-btn:hover {
+  background-color: #a67c00;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.swiper-pagination {
+  bottom: 0;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #a67c00;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #daa520;
+}
+
+.swiper-pagination-bullet {
+  background-color: #a67c00; /* Inactive bullet color */
+  opacity: 1; /* Ensure opacity is set to 1 for visibility */
+  transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+.swiper-pagination-bullet:hover,
+.swiper-pagination-bullet-active {
+  background-color: #daa520; /* Active bullet color (e.g., blue) */
+}
+
+.car-option {
+  border: 5px solid #ccc;
+  border-radius: 8px;
+  max-height: 100%;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.car-option:hover {
+  border-color: #a67c00; /* Highlight on hover */
+}
+
+.car-option.selected {
+  border: 5px solid #daa520;
+  /*  for selected */
+}
+
+.car-option img {
+  max-width: 100%; /* Responsive images */
+  border-radius: 5px;
+}
+
+.car-option p {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.submit-btn {
+  display: block;
+  margin: auto;
+  background-color: #daa520;
+  color: white;
+  padding: 20px 40px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-btn:hover {
+  background-color: #a67c00;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+@media only screen and (max-width: 991px) {
+  h1 {
+    font-size: 32px;
+  }
+  .form-row {
+    display: block;
+  }
+  .map-overlay {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    margin: 30px;
+    margin-right: auto;
+  }
+}
