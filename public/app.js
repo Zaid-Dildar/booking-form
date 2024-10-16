@@ -31,7 +31,7 @@ fetch("/api/mapbox-token")
 
     // Function to get location suggestions from the server
     function getSuggestions(query, callback) {
-      fetch(`/mapbox/geocode?q=${query}`)
+      fetch(`/api/mapbox/geocode?q=${query}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.features) {
@@ -102,7 +102,7 @@ fetch("/api/mapbox-token")
           const start = pickupCoordinates.join(",");
           const end = dropoffCoordinates.join(",");
 
-          fetch(`/mapbox/directions?start=${start}&end=${end}`)
+          fetch(`/api/mapbox/directions?start=${start}&end=${end}`)
             .then((response) => response.json())
             .then((data) => {
               if (data.routes && data.routes.length > 0) {
@@ -238,7 +238,7 @@ document
 
     if (isValid) {
       // Send the booking information to the backend
-      fetch("/submit-form", {
+      fetch("/api/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
