@@ -90,7 +90,6 @@ app.get("/mapbox/directions", async (req, res) => {
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
-    console.log(process.env.SENDGRID_API_KEY);
     console.log(`Server running on http://localhost:${PORT}`);
   });
 }

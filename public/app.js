@@ -229,7 +229,6 @@ document
     });
 
     if (bookingInfo.selectedCar === "No car selected") {
-      console.log(bookingInfo.selectedCar);
       document.getElementById("car-option-error").innerText =
         "Please select a car.";
       isValid = false;
