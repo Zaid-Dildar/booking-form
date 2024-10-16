@@ -1,6 +1,7 @@
 const sgMail = require("@sendgrid/mail");
+require("dotenv").config();
 
-export default async function handler(req, res) {
+export default (req, res) => {
   if (req.method === "POST") {
     const bookingInfo = req.body;
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -30,14 +31,16 @@ export default async function handler(req, res) {
       `,
     };
 
-    try {
-      await sgMail.send(msg);
-      res.status(200).json({ message: "Form submitted successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Failed to send email" });
-    }
+    sgMail
+      .send(msg)
+      .then(() => {
+        res.status(200).json({ message: "Form submitted successfully" });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ message: "Failed to send email" });
+      });
   } else {
-    res.status(405).json({ message: "Method Not Allowed" });
+    res.status(405).json({ message: "Method not allowed" });
   }
-}
+};

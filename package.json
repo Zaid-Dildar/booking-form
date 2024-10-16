@@ -1,10 +1,8 @@
 {
   "name": "booking-form",
   "version": "1.0.0",
-  "description": "This is a simple static website hosted on GitHub Pages. The website contains a form, map, and other interactive elements. You can view the live site at:",
-  "main": "api/index.js",
+  "description": "This is a simple static website hosted on GitHub Pages. The website contains a form, map, and other interactive elements.",
   "scripts": {
-    "start": "node api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
