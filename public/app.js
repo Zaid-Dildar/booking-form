@@ -51,16 +51,24 @@ fetch("/api/mapbox-token")
           getSuggestions(query, function (suggestions) {
             // Clear existing suggestions
             suggestionsContainer.innerHTML = "";
-            suggestions.forEach(function (suggestion) {
-              var item = document.createElement("div");
-              item.classList.add("suggestion-item");
-              item.innerHTML = suggestion.place_name;
-              item.addEventListener("click", function () {
-                inputField.value = suggestion.place_name;
-                suggestionsContainer.innerHTML = "";
-                var [lng, lat] = suggestion.center;
 
-                // Clear previous markers
+            // Add new suggestions as <li> elements
+            suggestions.forEach(function (suggestion) {
+              var listItem = document.createElement("div");
+              listItem.textContent = suggestion.place_name;
+              listItem.className = "suggestion-item";
+              listItem.dataset.lng = suggestion.center[0];
+              listItem.dataset.lat = suggestion.center[1];
+
+              // Handle suggestion click
+              listItem.addEventListener("click", function () {
+                inputField.value = suggestion.place_name;
+                suggestionsContainer.innerHTML = ""; // Clear suggestions
+
+                var lng = suggestion.center[0];
+                var lat = suggestion.center[1];
+
+                // Clear previous markers and add new marker
                 if (type === "pickup") {
                   clearPrevious(pickupMarker);
                   pickupMarker = new mapboxgl.Marker()
@@ -75,96 +83,104 @@ fetch("/api/mapbox-token")
                   dropoffCoordinates = [lng, lat];
                 }
 
-                // Fly to the selected location on the map
+                // Fly to selected location
                 map.flyTo({ center: [lng, lat], zoom: 12 });
+
+                // Fetch route if both pickup and dropoff are selected
+                if (pickupCoordinates && dropoffCoordinates) {
+                  fetchDirections();
+                }
               });
-              suggestionsContainer.appendChild(item);
+
+              suggestionsContainer.appendChild(listItem);
             });
           });
         } else {
-          suggestionsContainer.innerHTML = "";
+          suggestionsContainer.innerHTML = ""; // Clear suggestions if query is too short
         }
       });
+      // Hide suggestions on blur
+      inputField.addEventListener("blur", function () {
+        setTimeout(() => {
+          suggestionsContainer.innerHTML = ""; // Clear suggestions after a short delay to allow click event to register
+        }, 300);
+      });
+    }
+
+    // Fetch directions automatically once both pickup and dropoff are selected
+    function fetchDirections() {
+      if (pickupCoordinates && dropoffCoordinates) {
+        // Clear any previous route
+        clearPrevious(null);
+
+        const start = pickupCoordinates.join(",");
+        const end = dropoffCoordinates.join(",");
+
+        fetch(`/api/mapbox/directions?start=${start}&end=${end}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.routes && data.routes.length > 0) {
+              var route = data.routes[0];
+              var routeCoordinates = route.geometry.coordinates;
+
+              // Add the route line on the map
+              map.addSource(routeLayerId, {
+                type: "geojson",
+                data: {
+                  type: "Feature",
+                  geometry: {
+                    type: "LineString",
+                    coordinates: routeCoordinates,
+                  },
+                },
+              });
+
+              map.addLayer({
+                id: routeLayerId,
+                type: "line",
+                source: routeLayerId,
+                layout: {
+                  "line-join": "round",
+                  "line-cap": "round",
+                },
+                paint: {
+                  "line-color": "#4285F4", // Updated to blue (similar to major maps)
+                  "line-width": 6,
+                },
+              });
+
+              // Update the distance and time info
+              var distance = (route.distance / 1000).toFixed(2); // in km
+              var duration = (route.duration / 60).toFixed(2); // in minutes
+              document.getElementById(
+                "directions-info"
+              ).innerHTML = `Distance: ${distance} km | Duration: ${Math.ceil(
+                duration
+              )} mins`;
+
+              // Get bounds of the route
+              var bounds = new mapboxgl.LngLatBounds();
+
+              // Extend bounds to include each point of the route
+              routeCoordinates.forEach(function (coord) {
+                bounds.extend(coord);
+              });
+
+              // Fit the map to the bounds (zoom out and center to show the entire route)
+              map.fitBounds(bounds, {
+                padding: 50, // Adjust padding to avoid markers too close to map edge
+                maxZoom: 14, // Optionally set a maximum zoom level
+              });
+            } else {
+              console.error("No routes found");
+            }
+          });
+      }
     }
 
     // Initialize autocomplete for pickup and dropoff
     autocomplete("pickup", "pickup-suggestions", "pickup");
     autocomplete("dropoff", "dropoff-suggestions", "dropoff");
-
-    // Get directions between pickup and dropoff
-    document
-      .getElementById("directions-button")
-      .addEventListener("click", function () {
-        if (pickupCoordinates && dropoffCoordinates) {
-          // Clear any previous route
-          clearPrevious(null);
-
-          const start = pickupCoordinates.join(",");
-          const end = dropoffCoordinates.join(",");
-
-          fetch(`/api/mapbox/directions?start=${start}&end=${end}`)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.routes && data.routes.length > 0) {
-                var route = data.routes[0];
-                var routeCoordinates = route.geometry.coordinates;
-
-                // Add the route line on the map
-                map.addSource(routeLayerId, {
-                  type: "geojson",
-                  data: {
-                    type: "Feature",
-                    geometry: {
-                      type: "LineString",
-                      coordinates: routeCoordinates,
-                    },
-                  },
-                });
-
-                map.addLayer({
-                  id: routeLayerId,
-                  type: "line",
-                  source: routeLayerId,
-                  layout: {
-                    "line-join": "round",
-                    "line-cap": "round",
-                  },
-                  paint: {
-                    "line-color": "#ffcc00",
-                    "line-width": 6,
-                  },
-                });
-
-                // Update the distance and time info
-                var distance = (route.distance / 1000).toFixed(2); // in km
-                var duration = (route.duration / 60).toFixed(2); // in minutes
-                document.getElementById(
-                  "directions-info"
-                ).innerHTML = `Distance: ${distance} km | Duration: ${Math.ceil(
-                  duration
-                )} mins`;
-
-                // Get bounds of the route
-                var bounds = new mapboxgl.LngLatBounds();
-
-                // Extend bounds to include each point of the route
-                routeCoordinates.forEach(function (coord) {
-                  bounds.extend(coord);
-                });
-
-                // Fit the map to the bounds (zoom out and center to show the entire route)
-                map.fitBounds(bounds, {
-                  padding: 50, // Adjust padding to avoid markers too close to map edge
-                  maxZoom: 14, // Optionally set a maximum zoom level
-                });
-              } else {
-                console.error("No routes found");
-              }
-            });
-        } else {
-          alert("Please select both pickup and dropoff locations.");
-        }
-      });
   })
   .catch((error) => {
     console.error("Error fetching Mapbox token:", error);

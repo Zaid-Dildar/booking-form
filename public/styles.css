@@ -74,7 +74,9 @@ h1 {
 }
 
 .suggestions {
-  background-color: #daa520;
+  color: #000;
+  list-style: georgian;
+  background-color: #fff;
   max-height: 150px;
   overflow-y: auto;
 }
@@ -84,7 +86,7 @@ h1 {
   border-bottom: 1px solid #ddd;
 }
 .suggestion-item:hover {
-  background-color: #a67c00;
+  background-color: #daa520;
 }
 
 .map-container {
@@ -108,23 +110,6 @@ h1 {
 
 #directions-info {
   margin-top: 10px;
-}
-
-.directions-btn {
-  position: absolute;
-  z-index: 10;
-  top: 20px;
-  left: 20px;
-  padding: 10px 20px;
-  background-color: #daa520;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.directions-btn:hover {
-  background-color: #a67c00;
 }
 
 .swiper {
@@ -219,9 +204,8 @@ h1 {
   }
   .map-overlay {
     top: auto;
-    bottom: 0;
-    left: 0;
-    margin: 30px;
-    margin-right: auto;
+    right: auto;
+    left: auto;
+    margin: 10px;
   }
 }

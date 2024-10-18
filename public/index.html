@@ -104,7 +104,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="pickup">Pickup Location <span>*</span></label>
-            <input id="pickup" type="text" autocomplete="off" />
+            <input id="pickup" type="text" name="pickup-location" autocomplete="off" />
             <div id="pickup-suggestions" class="suggestions"></div>
             <div class="error-message" id="pickup-error"></div>
           </div>
@@ -124,6 +124,20 @@
             <div class="error-message" id="dropoff-error"></div>
           </div>
         </div>
+        
+        <!-- Row 7: Additional Information -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="additional-info"
+              >Additional Information (Optional)</label
+            >
+            <textarea
+              id="additional-info"
+              name="additional-info"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
 
         <!-- Mapbox Map -->
         <div class="map-container" id="map">
@@ -131,10 +145,6 @@
           <div class="map-overlay" id="directions-info">
             Distance: N/A | Duration: N/A
           </div>
-          <!-- Get Directions Button -->
-          <button class="directions-btn" id="directions-button" type="button">
-            View Route
-          </button>
         </div>
 
         <!-- Car Selection Slider -->
@@ -257,19 +267,6 @@
           <div class="swiper-button-prev"></div>
         </div>
 
-        <!--  Additional Information -->
-        <div class="form-row">
-          <div class="form-group">
-            <label for="additional-info"
-              >Additional Information (Optional)</label
-            >
-            <textarea
-              id="additional-info"
-              name="additional-info"
-              rows="4"
-            ></textarea>
-          </div>
-        </div>
         <!-- Submit Button -->
         <button type="submit" class="submit-btn">Reserve</button>
       </form>
