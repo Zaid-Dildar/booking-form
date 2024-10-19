@@ -1,5 +1,75 @@
 // Client-side JavaScript for handling the mapbox and form
 
+const perHourRate = 150; // Example hourly rate, adjust as needed (20 currency units per hour)
+const perKilometerRate = 2; // Example rate, adjust as needed (5 currency units per kilometer)
+
+// Swiper
+const swiper = new Swiper(".swiper", {
+  slidesPerView: 1, // Number of slides to show on desktop
+  slidesPerGroup: 1, // Number of slides to scroll
+  spaceBetween: 10, // Space between slides
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+  breakpoints: {
+    991: {
+      slidesPerView: 3, // Show 1 slide on mobile
+    },
+  },
+});
+
+// Handle gratuity selection
+const gratuitySelect = document.getElementById("gratuity");
+const customGratuityInput = document.getElementById("custom-gratuity");
+
+gratuitySelect.addEventListener("change", function () {
+  if (this.value === "custom") {
+    customGratuityInput.style.display = "block";
+    gratuitySelect.style.display = "none";
+  } else {
+    customGratuityInput.style.display = "none";
+    gratuitySelect.style.display = "block";
+  }
+});
+
+// Global variables to store calculated fees
+let globalDistanceFee = 0;
+let globalTimeFee = 0;
+// Handle VIP service
+const vipCheckbox = document.getElementById("vip-service");
+vipCheckbox.addEventListener("change", function () {
+  if (vipCheckbox.value === "yes") {
+    document.getElementById("vip-service-row").className = "price-row";
+  } else {
+    document.getElementById("vip-service-row").className = "hidden";
+  }
+  updatePriceSummary(globalDistanceFee, globalTimeFee);
+});
+
+customGratuityInput.addEventListener("input", function () {
+  console.log(customGratuityInput.value);
+  if (customGratuityInput.value == 0) {
+    document.getElementById("gratuity-row").className = "hidden";
+  } else {
+    document.getElementById("gratuity-row").className = "price-row";
+  }
+  updatePriceSummary(globalDistanceFee, globalTimeFee);
+});
+gratuitySelect.addEventListener("change", function () {
+  console.log(gratuitySelect.value);
+  if (gratuitySelect.value == 0 || gratuitySelect.value == "custom") {
+    document.getElementById("gratuity-row").className = "hidden";
+  } else {
+    document.getElementById("gratuity-row").className = "price-row";
+  }
+  updatePriceSummary(globalDistanceFee, globalTimeFee);
+});
+
 // Fetch Mapbox token from server-side endpoint
 fetch("/api/mapbox-token")
   .then((response) => response.json())
@@ -123,7 +193,27 @@ fetch("/api/mapbox-token")
               var route = data.routes[0];
               var routeCoordinates = route.geometry.coordinates;
 
-              // Add the route line on the map
+              // Calculate distance and time
+              var distanceInKm = (route.distance / 1000).toFixed(2); // Convert to km
+              var durationInMinutes = (route.duration / 60).toFixed(2); // Convert to minutes
+              var durationInHours = (route.duration / 3600).toFixed(2); // Convert to hours
+
+              // Calculate distance-based fee
+              globalDistanceFee = distanceInKm * perKilometerRate;
+
+              // Calculate time-based fee (hourly rate)
+              globalTimeFee = durationInHours * perHourRate;
+
+              // Display the distance, time, and fees info
+              document.getElementById("directions-info").innerHTML = `
+                Distance: ${distanceInKm} km | Duration: ${Math.ceil(
+                durationInMinutes
+              )} mins `;
+
+              // Update the price summary for both distance and time-based pricing
+              updatePriceSummary(globalDistanceFee, globalTimeFee); // Pass both fees
+
+              // Add the route to the map
               map.addSource(routeLayerId, {
                 type: "geojson",
                 data: {
@@ -144,29 +234,16 @@ fetch("/api/mapbox-token")
                   "line-cap": "round",
                 },
                 paint: {
-                  "line-color": "#4285F4", // Updated to blue (similar to major maps)
+                  "line-color": "#4285F4", // Blue color for the route
                   "line-width": 6,
                 },
               });
 
-              // Update the distance and time info
-              var distance = (route.distance / 1000).toFixed(2); // in km
-              var duration = (route.duration / 60).toFixed(2); // in minutes
-              document.getElementById(
-                "directions-info"
-              ).innerHTML = `Distance: ${distance} km | Duration: ${Math.ceil(
-                duration
-              )} mins`;
-
-              // Get bounds of the route
+              // Fit the map to the bounds (zoom out and center to show the entire route)
               var bounds = new mapboxgl.LngLatBounds();
-
-              // Extend bounds to include each point of the route
               routeCoordinates.forEach(function (coord) {
                 bounds.extend(coord);
               });
-
-              // Fit the map to the bounds (zoom out and center to show the entire route)
               map.fitBounds(bounds, {
                 padding: 50, // Adjust padding to avoid markers too close to map edge
                 maxZoom: 14, // Optionally set a maximum zoom level
@@ -185,6 +262,80 @@ fetch("/api/mapbox-token")
   .catch((error) => {
     console.error("Error fetching Mapbox token:", error);
   });
+
+// Tab Switching
+document.getElementById("distance-tab").addEventListener("click", function () {
+  document.getElementById("distance-tab").classList.add("active");
+  document.getElementById("hourly-tab").classList.remove("active");
+  updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
+});
+
+document.getElementById("hourly-tab").addEventListener("click", function () {
+  document.getElementById("hourly-tab").classList.add("active");
+  document.getElementById("distance-tab").classList.remove("active");
+  updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
+});
+
+function updatePriceSummary(distanceFee = 0, timeFee = 0) {
+  // Constants and initial setup
+  const vehicleFee = 200; // Example value, replace with actual vehicle fee logic
+  const taxRate = 0.13;
+  const vipFee = vipCheckbox.value === "yes" ? 100 : 0; // Example VIP fee
+  let gratuity = 0;
+
+  // Handle Gratuity Calculation
+  const selectedGratuity = gratuitySelect.value;
+  if (selectedGratuity === "custom") {
+    gratuity = parseFloat(customGratuityInput.value) || 0;
+  } else {
+    gratuity = (parseFloat(selectedGratuity) / 100) * vehicleFee;
+  }
+
+  // Determine the active pricing tab
+  const isHourlyTab = document
+    .getElementById("hourly-tab")
+    .classList.contains("active");
+
+  // Calculate total price based on the active tab
+  let total = 0;
+  if (isHourlyTab) {
+    // Hourly tab is active: Use timeFee
+    total = timeFee + vehicleFee + gratuity + vipFee;
+    document.getElementById("pricing-title").textContent =
+      "Hourly-Based Price Summary";
+    document.getElementById("pricing-fee-label").textContent = "Hourly fee";
+    document.getElementById("pricing-fee").textContent = `$${timeFee.toFixed(
+      2
+    )}`;
+  } else {
+    // Distance tab is active: Use distanceFee
+    total = distanceFee + vehicleFee + gratuity + vipFee;
+    document.getElementById("pricing-title").textContent =
+      "Distance-Based Price Summary";
+    document.getElementById("pricing-fee-label").textContent = "Distance fee";
+    document.getElementById(
+      "pricing-fee"
+    ).textContent = `$${distanceFee.toFixed(2)}`;
+  }
+
+  // Apply tax
+  const taxAmount = total * taxRate;
+  total += taxAmount;
+
+  // Update shared fields
+  document.getElementById("vehicle-fee").textContent = `$${vehicleFee.toFixed(
+    2
+  )}`;
+  document.getElementById("gratuity-fee").textContent = `$${gratuity.toFixed(
+    2
+  )}`;
+  document.getElementById("vip-fee").textContent = `$${vipFee.toFixed(2)}`;
+  document.getElementById("tax-fee").textContent = `$${taxAmount.toFixed(2)}`;
+  document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+
+  // Update hidden input for the final price to be submitted
+  document.getElementById("final-price").value = total.toFixed(2);
+}
 
 // Car selection
 const carOptions = document.querySelectorAll(".car-option");
@@ -253,30 +404,31 @@ document
     }
 
     if (isValid) {
+      alert("Form submitted successfully");
       // Send the booking information to the backend
-      fetch("/api/submit-form", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingInfo),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data); // Log the response from the backend
-          alert("Form submitted successfully!");
-          // Optionally, you could reset the form here
-          document.getElementById("reservation-form").reset();
-        })
-        .catch((error) => {
-          console.error("There was a problem with the fetch operation:", error);
-          alert("There was an error submitting your form. Please try again.");
-        });
+      // fetch("/api/submit-form", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(bookingInfo),
+      // })
+      //   .then((response) => {
+      //     if (!response.ok) {
+      //       throw new Error("Network response was not ok");
+      //     }
+      //     return response.json();
+      //   })
+      //   .then((data) => {
+      //     console.log(data); // Log the response from the backend
+      //     alert("Form submitted successfully!");
+      //     // Optionally, you could reset the form here
+      //     document.getElementById("reservation-form").reset();
+      //   })
+      //   .catch((error) => {
+      //     console.error("There was a problem with the fetch operation:", error);
+      //     alert("There was an error submitting your form. Please try again.");
+      //   });
     } else {
       alert("Missing required fields!");
     }

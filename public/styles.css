@@ -119,18 +119,16 @@ h1 {
   margin-bottom: 10px;
 }
 
-.swiper-pagination {
-  bottom: 0;
-}
-
 .swiper-button-next,
 .swiper-button-prev {
   color: #a67c00;
+  font-weight: 700;
 }
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
   color: #daa520;
+  font-weight: 900;
 }
 
 .swiper-pagination-bullet {
@@ -163,8 +161,9 @@ h1 {
 }
 
 .car-option img {
-  max-width: 100%; /* Responsive images */
-  border-radius: 5px;
+  width: 100%; /* Responsive images */
+  height: 200px;
+  border-radius: 3px;
 }
 
 .car-option p {
@@ -193,6 +192,65 @@ h1 {
   color: red;
   font-size: 12px;
   margin-top: 5px;
+}
+
+.custom-gratuity {
+  display: none;
+}
+
+.price-type-tabs {
+  display: flex;
+  justify-content: space-around;
+}
+
+.tab-button {
+  width: 100%;
+  background-color: #f1f1f1;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.tab-button:hover {
+  background-color: #a67c00;
+}
+
+.tab-button.active {
+  background-color: #daa520;
+  color: white;
+}
+
+.pricing-section {
+  display: none;
+}
+
+.pricing-section.active {
+  display: block;
+}
+
+.pricing-section {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.pricing-section .price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.pricing-section .price-row.total {
+  font-weight: bold;
+}
+
+.notes {
+  font-size: 12px;
+  color: #b2a6a6;
+}
+
+.hidden {
+  display: none;
 }
 
 @media only screen and (max-width: 991px) {
