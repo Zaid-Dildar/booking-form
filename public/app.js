@@ -427,12 +427,11 @@ $(document).ready(function () {
       dropoffLocation: document.getElementById("dropoff").value,
       pickupDate: document.getElementById("pickup-date").value,
       pickupTime: document.getElementById("pickup-time").value,
-      selectedCar:
-        document.querySelector(".car-option.selected")?.innerText ||
-        "No car selected",
+      selectedCar: document.querySelector(".car-option.selected")?.innerText,
     };
 
     console.log(bookingInfo);
+    alert("Reservation confirmed!");
 
     // Send the booking information to the backend
     // fetch("/api/submit-form", {
