@@ -11,6 +11,36 @@ let globalTimeFee = 0;
 let durationInHours = 0;
 let distanceInKm = 0;
 
+// Get the datepicker element and error message
+const datepicker = document.getElementById("pickup-date");
+const error = document.getElementById("pickup-date-close-error");
+
+// Create a new Date object and add 24 hours to the current time
+const now = new Date();
+now.setDate(now.getDate() + 1); // Add 1 day (24 hours)
+
+// Format the date to be compatible with the input type="date"
+const year = now.getFullYear();
+const month = (now.getMonth() + 1).toString().padStart(2, "0");
+const day = now.getDate().toString().padStart(2, "0");
+
+// Set the minimum date (at least 24 hours from now)
+datepicker.min = `${year}-${month}-${day}`;
+
+// Add an event listener to validate user input
+datepicker.addEventListener("change", function () {
+  const selectedDate = new Date(this.value);
+  const minimumDate = new Date();
+  minimumDate.setDate(minimumDate.getDate() + 1);
+
+  // Check if the selected date is at least 24 hours from now
+  if (selectedDate < minimumDate) {
+    error.style.display = "block"; // Show the error message
+    this.value = ""; // Reset the value if it's invalid
+  } else {
+    error.style.display = "none"; // Hide the error message if valid
+  }
+});
 // Object to store prices for each car type
 const carPrices = {
   Sprinter: { hourly: 325, perKilometer: 5.5 },
@@ -26,25 +56,21 @@ function setCarPrices(carType) {
   if (carPrices[carType]) {
     perHourRate = carPrices[carType].hourly;
     perKilometerRate = carPrices[carType].perKilometer;
-    console.log(`Selected car: ${carType}`);
-    console.log(
-      `Hourly Price: $${perHourRate}, Per Kilometer Price: $${perKilometerRate}`
-    );
     // Calculate distance-based fee
     if (durationInHours < 1) {
       globalDistanceFee = perHourRate;
     } else {
       globalDistanceFee = distanceInKm * perKilometerRate;
     }
-    console.log(globalDistanceFee);
+    globalTimeFee = perHourRate;
     updatePriceSummary(globalDistanceFee, globalTimeFee);
+    document.getElementById("hours").value = 1;
   }
 }
 
 // calculating globalTieFee
 document.getElementById("hours").addEventListener("change", function () {
   globalTimeFee = this.value * perHourRate;
-  console.log(globalTimeFee);
   updatePriceSummary(globalDistanceFee, globalTimeFee);
 });
 
@@ -265,7 +291,6 @@ fetch("/api/mapbox-token")
               } else {
                 globalDistanceFee = distanceInKm * perKilometerRate;
               }
-              console.log(globalDistanceFee);
               updatePriceSummary(globalDistanceFee, globalTimeFee);
 
               // Display the distance, time, and fees info
@@ -477,6 +502,7 @@ $(document).ready(function () {
   // Close popup on clicking "Edit" button
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
+    alert("Booking cancelled!");
   });
 
   // Handle confirm button action
@@ -499,6 +525,9 @@ $(document).ready(function () {
         ?.querySelector("strong")
         .textContent.trim(),
       basicFee: document.getElementById("pricing-fee").innerText,
+      hours: document.getElementById("hours-row").classList.contains("hidden")
+        ? "N/A"
+        : document.getElementById("hours").value,
       gratuity: document.getElementById("gratuity-fee").innerText || "N/A",
       vipService: document.getElementById("vip-fee").innerText || "N/A",
       tax: document.getElementById("tax-fee").innerText || "N/A",
@@ -530,6 +559,7 @@ $(document).ready(function () {
         .then((data) => {
           alert("Reservation confirmed!");
           $.magnificPopup.close(); // Close the popup after successful submission
+          document.getElementById("reservation-form").reset();
         })
         .catch((error) => {
           console.error("There was a problem with the fetch operation:", error);

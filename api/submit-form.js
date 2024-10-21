@@ -31,6 +31,7 @@ export default async (req, res) => {
       <p><strong>Pickup Time:</strong> ${bookingInfo.pickupTime}</p>
       <p><strong>Selected Car:</strong> ${bookingInfo.selectedCar}</p>
       <p><strong>Basic Fee:</strong> ${bookingInfo.basicFee}</p>
+      <p><strong>No of hours:</strong> ${bookingInfo.hours}</p>
       <p><strong>Gratuity:</strong> ${bookingInfo.gratuity}</p>
       <p><strong>Vip Service:</strong> ${bookingInfo.vipService}</p>
       <p><strong>Tax:</strong> ${bookingInfo.tax}</p>

@@ -76,12 +76,18 @@
         <div class="form-row">
           <div class="form-group">
             <label for="passengers">No. of Passengers <span>*</span></label>
-            <input type="number" id="passengers" name="passengers" />
+            <input
+              type="number"
+              id="passengers"
+              name="passengers"
+              min="1"
+              max="11"
+            />
             <div class="error-message" id="passengers-error"></div>
           </div>
           <div class="form-group">
             <label for="bags">No. of Bags <span>*</span></label>
-            <input type="number" id="bags" name="bags" />
+            <input type="number" id="bags" name="bags" min="0" max="11" />
             <div class="error-message" id="bags-error"></div>
           </div>
         </div>
@@ -100,6 +106,9 @@
             <label for="pickup-date">Pickup Date <span>*</span></label>
             <input type="date" id="pickup-date" name="pickup-date" />
             <div class="error-message" id="pickup-date-error"></div>
+            <div class="error-message hidden" id="pickup-date-close-error">
+              Please select a date at least 24 hours from now.
+            </div>
           </div>
           <div class="form-group">
             <label for="pickup-time">Pickup Time <span>*</span></label>
@@ -325,7 +334,7 @@
           <!-- No of Hours -->
           <div id="hours-row" class="form row form-group hidden">
             <label for="hours">No. of hours <span>*</span></label>
-            <input id="hours" name="hours" type="number" />
+            <input id="hours" name="hours" type="number" min="1" value="1" />
             <div class="error-message" id="hours-error"></div>
           </div>
 
