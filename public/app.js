@@ -5,7 +5,7 @@ const perKilometerRate = 2; // Example rate, adjust as needed (5 currency units 
 
 // Swiper
 const swiper = new Swiper(".swiper", {
-  slidesPerView: 1, // Number of slides to show on desktop
+  slidesPerView: 1, // Number of slides to show on mobile
   slidesPerGroup: 1, // Number of slides to scroll
   spaceBetween: 10, // Space between slides
   pagination: {
@@ -18,20 +18,31 @@ const swiper = new Swiper(".swiper", {
   },
   breakpoints: {
     991: {
-      slidesPerView: 3, // Show 1 slide on mobile
+      slidesPerView: 2, // Show 2 slide on desktop
     },
   },
 });
 
 // Handle gratuity selection
 const gratuitySelect = document.getElementById("gratuity");
+const gratuitySelectButton = document.getElementById("backToSelect");
 const customGratuityInput = document.getElementById("custom-gratuity");
+const customGratuityBox = document.getElementById("custom-gratuity-box");
+
+gratuitySelectButton.addEventListener("click", function () {
+  gratuitySelect.value = "0";
+  customGratuityBox.style.display = "none";
+  customGratuityInput.style.display = "none";
+  gratuitySelect.style.display = "block";
+});
 
 gratuitySelect.addEventListener("change", function () {
   if (this.value === "custom") {
+    customGratuityBox.style.display = "flex";
     customGratuityInput.style.display = "block";
     gratuitySelect.style.display = "none";
   } else {
+    customGratuityBox.style.display = "none";
     customGratuityInput.style.display = "none";
     gratuitySelect.style.display = "block";
   }
@@ -52,7 +63,6 @@ vipCheckbox.addEventListener("change", function () {
 });
 
 customGratuityInput.addEventListener("input", function () {
-  console.log(customGratuityInput.value);
   if (customGratuityInput.value == 0) {
     document.getElementById("gratuity-row").className = "hidden";
   } else {
@@ -346,11 +356,64 @@ carOptions.forEach((option) => {
   });
 });
 
-// Handle form submission
-document
-  .getElementById("reservation-form")
-  .addEventListener("submit", function (e) {
+$(document).ready(function () {
+  // Initialize Magnific Popup
+  $("#reserve-btn").on("click", function (e) {
     e.preventDefault();
+
+    // Perform validation first before showing the popup
+    let isValid = true;
+    const requiredFields = [
+      "passengers",
+      "bags",
+      "first-name",
+      "last-name",
+      "email",
+      "phone",
+      "pickup-date",
+      "pickup-time",
+      "pickup",
+      "dropoff",
+    ];
+
+    requiredFields.forEach((fieldId) => {
+      const field = document.getElementById(fieldId);
+      const errorField = document.getElementById(fieldId + "-error");
+      if (!field.value) {
+        errorField.innerText = "This field is required!";
+        isValid = false;
+      } else {
+        errorField.innerText = "";
+      }
+      if (!document.querySelector(".car-option.selected")?.innerText) {
+        isValid = false;
+        document.getElementById("car-option-error").innerText =
+          "Please select a car.";
+      }
+    });
+
+    if (isValid) {
+      // Show the popup if the form is valid
+      $.magnificPopup.open({
+        items: {
+          src: "#reservation-popup", // This is the ID of the popup
+          type: "inline",
+        },
+        closeOnBgClick: true, // Close popup when clicking on backdrop
+        showCloseBtn: false, // Hide default close button
+      });
+    } else {
+      alert("Missing required fields!");
+    }
+  });
+
+  // Close popup on clicking "Edit" button
+  $("#edit-btn").on("click", function () {
+    $.magnificPopup.close();
+  });
+
+  // Handle confirm button action
+  $("#confirm-btn").on("click", function () {
     let bookingInfo = {
       passengers: document.getElementById("passengers").value,
       bags: document.getElementById("bags").value,
@@ -369,67 +432,118 @@ document
         "No car selected",
     };
 
-    // Add validation checks for required fields
-    const requiredFields = [
-      "passengers",
-      "bags",
-      "first-name",
-      "last-name",
-      "email",
-      "phone",
-      "pickup-date",
-      "pickup-time",
-      "pickup",
-      "dropoff",
-    ];
-    let isValid = true;
+    console.log(bookingInfo);
 
-    requiredFields.forEach((fieldId) => {
-      const field = document.getElementById(fieldId);
-      const errorField = document.getElementById(fieldId + "-error");
-      if (!field.value) {
-        errorField.innerText = "This field is required!";
-        isValid = false;
-      } else {
-        errorField.innerText = "";
-      }
-    });
-
-    if (bookingInfo.selectedCar === "No car selected") {
-      document.getElementById("car-option-error").innerText =
-        "Please select a car.";
-      isValid = false;
-    } else {
-      document.getElementById("car-option-error").innerText = "";
-    }
-
-    if (isValid) {
-      alert("Form submitted successfully");
-      // Send the booking information to the backend
-      // fetch("/api/submit-form", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(bookingInfo),
-      // })
-      //   .then((response) => {
-      //     if (!response.ok) {
-      //       throw new Error("Network response was not ok");
-      //     }
-      //     return response.json();
-      //   })
-      //   .then((data) => {
-      //     console.log(data); // Log the response from the backend
-      //     alert("Form submitted successfully!");
-      //     // Optionally, you could reset the form here
-      //     document.getElementById("reservation-form").reset();
-      //   })
-      //   .catch((error) => {
-      //     console.error("There was a problem with the fetch operation:", error);
-      //     alert("There was an error submitting your form. Please try again.");
-      //   });
-    } else {
-      alert("Missing required fields!");
-    }
+    // Send the booking information to the backend
+    // fetch("/api/submit-form", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(bookingInfo),
+    // })
+    //   .then((response) => {
+    //     if (!response.ok) {
+    //       throw new Error("Network response was not ok");
+    //     }
+    //     return response.json();
+    //   })
+    //   .then((data) => {
+    //     console.log(data); // Log the response from the backend
+    //     alert("Reservation confirmed!");
+    //     $.magnificPopup.close(); // Close the popup after successful submission
+    //   })
+    //   .catch((error) => {
+    //     console.error("There was a problem with the fetch operation:", error);
+    //     alert("There was an error submitting your form. Please try again.");
+    //   });
   });
+});
+
+// // Handle form submission
+// document
+//   .getElementById("reservation-form")
+//   .addEventListener("submit", function (e) {
+//     e.preventDefault();
+//     let bookingInfo = {
+//       passengers: document.getElementById("passengers").value,
+//       bags: document.getElementById("bags").value,
+//       firstName: document.getElementById("first-name").value,
+//       lastName: document.getElementById("last-name").value,
+//       email: document.getElementById("email").value,
+//       phone: document.getElementById("phone").value,
+//       flightNo: document.getElementById("flight-no").value || "N/A",
+//       additionalInfo: document.getElementById("additional-info").value || "N/A",
+//       pickupLocation: document.getElementById("pickup").value,
+//       dropoffLocation: document.getElementById("dropoff").value,
+//       pickupDate: document.getElementById("pickup-date").value,
+//       pickupTime: document.getElementById("pickup-time").value,
+//       selectedCar:
+//         document.querySelector(".car-option.selected")?.innerText ||
+//         "No car selected",
+//     };
+
+//     // Add validation checks for required fields
+//     const requiredFields = [
+//       "passengers",
+//       "bags",
+//       "first-name",
+//       "last-name",
+//       "email",
+//       "phone",
+//       "pickup-date",
+//       "pickup-time",
+//       "pickup",
+//       "dropoff",
+//     ];
+//     let isValid = true;
+
+//     requiredFields.forEach((fieldId) => {
+//       const field = document.getElementById(fieldId);
+//       const errorField = document.getElementById(fieldId + "-error");
+//       if (!field.value) {
+//         errorField.innerText = "This field is required!";
+//         isValid = false;
+//       } else {
+//         errorField.innerText = "";
+//       }
+//     });
+
+//     if (bookingInfo.selectedCar === "No car selected") {
+//       document.getElementById("car-option-error").innerText =
+//         "Please select a car.";
+//       isValid = false;
+//     } else {
+//       document.getElementById("car-option-error").innerText = "";
+//     }
+
+//     if (isValid) {
+//       alert("Form submitted successfully");
+//       // Send the booking information to the backend
+//       // fetch("/api/submit-form", {
+//       //   method: "POST",
+//       //   headers: {
+//       //     "Content-Type": "application/json",
+//       //   },
+//       //   body: JSON.stringify(bookingInfo),
+//       // })
+//       //   .then((response) => {
+//       //     if (!response.ok) {
+//       //       throw new Error("Network response was not ok");
+//       //     }
+//       //     return response.json();
+//       //   })
+//       //   .then((data) => {
+//       //     console.log(data); // Log the response from the backend
+//       //     alert("Form submitted successfully!");
+//       //     // Optionally, you could reset the form here
+//       //     document.getElementById("reservation-form").reset();
+//       //   })
+//       //   .catch((error) => {
+//       //     console.error("There was a problem with the fetch operation:", error);
+//       //     alert("There was an error submitting your form. Please try again.");
+//       //   });
+//     } else {
+//       alert("Missing required fields!");
+//     }
+//   });

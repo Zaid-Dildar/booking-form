@@ -26,6 +26,14 @@
       rel="stylesheet"
     />
 
+    <!-- POPUP -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -144,17 +152,9 @@
           </div>
         </div>
 
-        <!-- Mapbox Map -->
-        <div class="map-container" id="map">
-          <!-- Distance and Time Info -->
-          <div class="map-overlay" id="directions-info">
-            Distance: N/A | Duration: N/A
-          </div>
-        </div>
-
         <!-- Car Selection Slider -->
         <h2>
-          Select Vehicle
+          Select Vehicle <span style="color: red">*</span>
           <div class="error-message" id="car-option-error"></div>
         </h2>
 
@@ -266,87 +266,121 @@
           <div class="swiper-button-prev"></div>
         </div>
 
-        <!-- Gratuity Selection -->
-        <div class="form-row">
-          <div class="form-group">
-            <label for="gratuity">Add Gratuity (Optional)</label>
-            <select id="gratuity" name="gratuity">
-              <option value="0">No Gratuity</option>
-              <option value="5">5%</option>
-              <option value="10">10%</option>
-              <option value="15">15%</option>
-              <option value="20">20%</option>
-              <option value="25">25%</option>
-              <option value="custom">Custom Amount</option>
-            </select>
-            <input
-              type="number"
-              id="custom-gratuity"
-              class="custom-gratuity"
-              placeholder="Custom Gratuity Amount($)"
-            />
-          </div>
-
-          <!-- VIP Protocol Service -->
-          <div class="form-group">
-            <label for="vip-service">Add VIP Protocol Service</label>
-            <select id="vip-service" name="vip-service">
-              <option value="no">No</option>
-              <option value="yes">Yes</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Price Summary Section -->
-        <!-- Price Type Tabs (Distance or Hourly) -->
-        <div class="price-type-tabs">
-          <button type="button" id="distance-tab" class="tab-button active">
-            Distance-Based
-          </button>
-          <button type="button" id="hourly-tab" class="tab-button">
-            Hourly-Based
-          </button>
-        </div>
-
-        <!-- Unified Price Summary Section -->
-        <div id="price-summary" class="pricing-section active">
-          <h2 id="pricing-title">Distance-Based Price Summary</h2>
-          <div class="price-row">
-            <span id="pricing-fee-label">Distance fee</span>
-            <span id="pricing-fee">$0.00</span>
-          </div>
-          <div class="price-row">
-            <span>Selected vehicle</span>
-            <span id="vehicle-fee">$0.00</span>
-          </div>
-          <div id="gratuity-row" class="hidden">
-            <span>Gratuity</span>
-            <span id="gratuity-fee">$0.00</span>
-          </div>
-          <div id="vip-service-row" class="hidden">
-            <span>VIP Service</span>
-            <span id="vip-fee">$0.00</span>
-          </div>
-          <div class="price-row">
-            <span>Tax (13%)</span>
-            <span id="tax-fee">$0.00</span>
-          </div>
-          <hr />
-          <div class="price-row total">
-            <strong>Total</strong>
-            <strong id="total-price">$0.00</strong>
-          </div>
-          <p class="notes">
-            Includes surcharge of 13%. Additional charges may apply if the
-            driver has to detour for any unforeseen circumstances.
-          </p>
-        </div>
-
-        <!-- Hidden input field to hold the final price to be sent to the API -->
-        <input type="hidden" id="final-price" name="final_price" value="0.00" />
-
         <!-- Submit Button -->
-        <button type="submit" class="submit-btn">Reserve</button>
+        <button id="reserve-btn" type="submit" class="submit-btn">
+          Reserve
+        </button>
+
+        <!-- Pop-up -->
+        <div id="reservation-popup" class="white-popup mfp-hide">
+          <!-- Mapbox Map -->
+          <div class="map-container" id="map">
+            <!-- Distance and Time Info -->
+            <div class="map-overlay" id="directions-info">
+              Distance: N/A | Duration: N/A
+            </div>
+          </div>
+
+          <!-- Gratuity Selection -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="gratuity">Add Gratuity (Optional)</label>
+              <select id="gratuity" name="gratuity">
+                <option value="0">No Gratuity</option>
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20">20%</option>
+                <option value="25">25%</option>
+                <option value="custom">Custom Amount</option>
+              </select>
+              <div id="custom-gratuity-box" class="custom-gratuity">
+                <input
+                  type="number"
+                  id="custom-gratuity"
+                  class="custom-gratuity"
+                  placeholder="Custom Gratuity Amount($)"
+                />
+                <button
+                  id="backToSelect"
+                  type="button"
+                  title="Go back to select menu"
+                  class="backToSelect"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- VIP Protocol Service -->
+            <div class="form-group">
+              <label for="vip-service">Add VIP Protocol Service</label>
+              <select id="vip-service" name="vip-service">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price Summary Section -->
+          <!-- Price Type Tabs (Distance or Hourly) -->
+          <div class="price-type-tabs">
+            <button type="button" id="distance-tab" class="tab-button active">
+              Distance-Based
+            </button>
+            <button type="button" id="hourly-tab" class="tab-button">
+              Hourly-Based
+            </button>
+          </div>
+
+          <!-- Unified Price Summary Section -->
+          <div id="price-summary" class="pricing-section active">
+            <h2 id="pricing-title">Distance-Based Price Summary</h2>
+            <div class="price-row">
+              <span id="pricing-fee-label">Distance fee</span>
+              <span id="pricing-fee">$0.00</span>
+            </div>
+            <div class="price-row">
+              <span>Selected vehicle</span>
+              <span id="vehicle-fee">$0.00</span>
+            </div>
+            <div id="gratuity-row" class="hidden">
+              <span>Gratuity</span>
+              <span id="gratuity-fee">$0.00</span>
+            </div>
+            <div id="vip-service-row" class="hidden">
+              <span>VIP Service</span>
+              <span id="vip-fee">$0.00</span>
+            </div>
+            <div class="price-row">
+              <span>Tax (13%)</span>
+              <span id="tax-fee">$0.00</span>
+            </div>
+            <hr />
+            <div class="price-row total">
+              <strong>Total</strong>
+              <strong id="total-price">$0.00</strong>
+            </div>
+            <p class="notes">
+              Includes surcharge of 13%. Additional charges may apply if the
+              driver has to detour for any unforeseen circumstances.
+            </p>
+          </div>
+
+          <!-- Hidden input field to hold the final price to be sent to the API -->
+          <input
+            type="hidden"
+            id="final-price"
+            name="final_price"
+            value="0.00"
+          />
+
+          <!-- Popup action buttons -->
+          <div class="popup-actions">
+            <button id="confirm-btn" class="btn btn-success">Confirm</button>
+            <button id="edit-btn" class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
       </form>
     </div>
     <!-- Swiper JS -->
