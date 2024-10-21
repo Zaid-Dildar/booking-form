@@ -494,6 +494,7 @@ $(document).ready(function () {
         closeOnBgClick: true, // Close popup when clicking on backdrop
         showCloseBtn: false, // Hide default close button
       });
+      window.parent.postMessage("disable-scroll", "*");
     } else {
       alert("Missing required fields!");
     }
@@ -503,6 +504,7 @@ $(document).ready(function () {
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
     alert("Booking cancelled!");
+    window.parent.postMessage("enable-scroll", "*");
   });
 
   // Handle confirm button action
@@ -560,6 +562,7 @@ $(document).ready(function () {
           alert("Reservation confirmed!");
           $.magnificPopup.close(); // Close the popup after successful submission
           document.getElementById("reservation-form").reset();
+          window.parent.postMessage("enable-scroll", "*");
         })
         .catch((error) => {
           console.error("There was a problem with the fetch operation:", error);
