@@ -322,6 +322,13 @@
             </div>
           </div>
 
+          <!-- No of Hours -->
+          <div id="hours-row" class="form row form-group hidden">
+            <label for="hours">No. of hours <span>*</span></label>
+            <input id="hours" name="hours" type="number" />
+            <div class="error-message" id="hours-error"></div>
+          </div>
+
           <!-- Price Summary Section -->
           <!-- Price Type Tabs (Distance or Hourly) -->
           <div class="price-type-tabs">
@@ -339,10 +346,6 @@
             <div class="price-row">
               <span id="pricing-fee-label">Distance fee</span>
               <span id="pricing-fee">$0.00</span>
-            </div>
-            <div class="price-row">
-              <span>Selected vehicle</span>
-              <span id="vehicle-fee">$0.00</span>
             </div>
             <div id="gratuity-row" class="hidden">
               <span>Gratuity</span>

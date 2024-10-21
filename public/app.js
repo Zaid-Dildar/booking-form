@@ -1,11 +1,52 @@
 // Client-side JavaScript for handling the mapbox and form
 
-const perHourRate = 150; // Example hourly rate, adjust as needed (20 currency units per hour)
-const perKilometerRate = 2; // Example rate, adjust as needed (5 currency units per kilometer)
+let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
+let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
 
-const mapResize = (map) => {
-  map.resize;
+// Global variables to store calculated fees
+let globalDistanceFee = 0;
+let globalTimeFee = 0;
+
+// Global variables to store calculated distance and time
+let durationInHours = 0;
+let distanceInKm = 0;
+
+// Object to store prices for each car type
+const carPrices = {
+  Sprinter: { hourly: 325, perKilometer: 5.5 },
+  "Stretch SUV": { hourly: 349, perKilometer: 6.5 },
+  SUV: { hourly: 120, perKilometer: 2.55 },
+  "Cadillac Escalade SUV": { hourly: 210, perKilometer: 2.95 },
+  "Class Mercedes": { hourly: 175, perKilometer: 2.75 },
+  Sedan: { hourly: 85, perKilometer: 1.97 },
 };
+
+// Function to set prices based on selected car
+function setCarPrices(carType) {
+  if (carPrices[carType]) {
+    perHourRate = carPrices[carType].hourly;
+    perKilometerRate = carPrices[carType].perKilometer;
+    console.log(`Selected car: ${carType}`);
+    console.log(
+      `Hourly Price: $${perHourRate}, Per Kilometer Price: $${perKilometerRate}`
+    );
+    // Calculate distance-based fee
+    if (durationInHours < 1) {
+      globalDistanceFee = perHourRate;
+    } else {
+      globalDistanceFee = distanceInKm * perKilometerRate;
+    }
+    console.log(globalDistanceFee);
+    updatePriceSummary(globalDistanceFee, globalTimeFee);
+  }
+}
+
+// calculating globalTieFee
+document.getElementById("hours").addEventListener("change", function () {
+  globalTimeFee = this.value * perHourRate;
+  console.log(globalTimeFee);
+  updatePriceSummary(globalDistanceFee, globalTimeFee);
+});
 
 // Swiper
 const swiper = new Swiper(".swiper", {
@@ -44,6 +85,7 @@ gratuitySelect.addEventListener("change", function () {
   if (this.value === "custom") {
     customGratuityBox.style.display = "flex";
     customGratuityInput.style.display = "block";
+    customGratuityInput.focus();
     gratuitySelect.style.display = "none";
   } else {
     customGratuityBox.style.display = "none";
@@ -52,9 +94,6 @@ gratuitySelect.addEventListener("change", function () {
   }
 });
 
-// Global variables to store calculated fees
-let globalDistanceFee = 0;
-let globalTimeFee = 0;
 // Handle VIP service
 const vipCheckbox = document.getElementById("vip-service");
 vipCheckbox.addEventListener("change", function () {
@@ -75,7 +114,6 @@ customGratuityInput.addEventListener("input", function () {
   updatePriceSummary(globalDistanceFee, globalTimeFee);
 });
 gratuitySelect.addEventListener("change", function () {
-  console.log(gratuitySelect.value);
   if (gratuitySelect.value == 0 || gratuitySelect.value == "custom") {
     document.getElementById("gratuity-row").className = "hidden";
   } else {
@@ -217,15 +255,18 @@ fetch("/api/mapbox-token")
               var routeCoordinates = route.geometry.coordinates;
 
               // Calculate distance and time
-              var distanceInKm = (route.distance / 1000).toFixed(2); // Convert to km
+              distanceInKm = (route.distance / 1000).toFixed(2); // Convert to km
+              durationInHours = (route.duration / 3600).toFixed(2); // Convert to hours
               var durationInMinutes = (route.duration / 60).toFixed(2); // Convert to minutes
-              var durationInHours = (route.duration / 3600).toFixed(2); // Convert to hours
 
               // Calculate distance-based fee
-              globalDistanceFee = distanceInKm * perKilometerRate;
-
-              // Calculate time-based fee (hourly rate)
-              globalTimeFee = durationInHours * perHourRate;
+              if (durationInHours < 1) {
+                globalDistanceFee = perHourRate;
+              } else {
+                globalDistanceFee = distanceInKm * perKilometerRate;
+              }
+              console.log(globalDistanceFee);
+              updatePriceSummary(globalDistanceFee, globalTimeFee);
 
               // Display the distance, time, and fees info
               document.getElementById("directions-info").innerHTML = `
@@ -288,12 +329,15 @@ fetch("/api/mapbox-token")
 
 // Tab Switching
 document.getElementById("distance-tab").addEventListener("click", function () {
+  document.getElementById("hours-row").classList.add("hidden");
   document.getElementById("distance-tab").classList.add("active");
   document.getElementById("hourly-tab").classList.remove("active");
   updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
 });
 
 document.getElementById("hourly-tab").addEventListener("click", function () {
+  document.getElementById("hours-row").classList.remove("hidden");
+  document.getElementById("hours").focus();
   document.getElementById("hourly-tab").classList.add("active");
   document.getElementById("distance-tab").classList.remove("active");
   updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
@@ -301,18 +345,9 @@ document.getElementById("hourly-tab").addEventListener("click", function () {
 
 function updatePriceSummary(distanceFee = 0, timeFee = 0) {
   // Constants and initial setup
-  const vehicleFee = 200; // Example value, replace with actual vehicle fee logic
   const taxRate = 0.13;
   const vipFee = vipCheckbox.value === "yes" ? 100 : 0; // Example VIP fee
   let gratuity = 0;
-
-  // Handle Gratuity Calculation
-  const selectedGratuity = gratuitySelect.value;
-  if (selectedGratuity === "custom") {
-    gratuity = parseFloat(customGratuityInput.value) || 0;
-  } else {
-    gratuity = (parseFloat(selectedGratuity) / 100) * vehicleFee;
-  }
 
   // Determine the active pricing tab
   const isHourlyTab = document
@@ -323,16 +358,34 @@ function updatePriceSummary(distanceFee = 0, timeFee = 0) {
   let total = 0;
   if (isHourlyTab) {
     // Hourly tab is active: Use timeFee
-    total = timeFee + vehicleFee + gratuity + vipFee;
+
+    // Handle Gratuity Calculation
+    const selectedGratuity = gratuitySelect.value;
+    if (selectedGratuity === "custom") {
+      gratuity = parseFloat(customGratuityInput.value) || 0;
+    } else {
+      gratuity = (parseFloat(selectedGratuity) / 100) * timeFee;
+    }
+
+    total = timeFee + gratuity + vipFee;
     document.getElementById("pricing-title").textContent =
       "Hourly-Based Price Summary";
-    document.getElementById("pricing-fee-label").textContent = "Hourly fee";
+    document.getElementById("pricing-fee-label").textContent = "Duration fee";
     document.getElementById("pricing-fee").textContent = `$${timeFee.toFixed(
       2
     )}`;
   } else {
     // Distance tab is active: Use distanceFee
-    total = distanceFee + vehicleFee + gratuity + vipFee;
+
+    // Handle Gratuity Calculation
+    const selectedGratuity = gratuitySelect.value;
+    if (selectedGratuity === "custom") {
+      gratuity = parseFloat(customGratuityInput.value) || 0;
+    } else {
+      gratuity = (parseFloat(selectedGratuity) / 100) * distanceFee;
+    }
+
+    total = distanceFee + gratuity + vipFee;
     document.getElementById("pricing-title").textContent =
       "Distance-Based Price Summary";
     document.getElementById("pricing-fee-label").textContent = "Distance fee";
@@ -346,9 +399,6 @@ function updatePriceSummary(distanceFee = 0, timeFee = 0) {
   total += taxAmount;
 
   // Update shared fields
-  document.getElementById("vehicle-fee").textContent = `$${vehicleFee.toFixed(
-    2
-  )}`;
   document.getElementById("gratuity-fee").textContent = `$${gratuity.toFixed(
     2
   )}`;
@@ -362,10 +412,12 @@ function updatePriceSummary(distanceFee = 0, timeFee = 0) {
 
 // Car selection
 const carOptions = document.querySelectorAll(".car-option");
-carOptions.forEach((option) => {
-  option.addEventListener("click", () => {
+carOptions.forEach(function (option) {
+  option.addEventListener("click", function () {
     carOptions.forEach((opt) => opt.classList.remove("selected"));
-    option.classList.add("selected");
+    this.classList.add("selected");
+    const selectedCarType = this.querySelector("strong").textContent.trim();
+    setCarPrices(selectedCarType);
   });
 });
 
@@ -398,10 +450,12 @@ $(document).ready(function () {
       } else {
         errorField.innerText = "";
       }
-      if (!document.querySelector(".car-option.selected")?.innerText) {
+      if (!document.querySelector(".car-option.selected")) {
         isValid = false;
         document.getElementById("car-option-error").innerText =
           "Please select a car.";
+      } else {
+        document.getElementById("car-option-error").innerText = "";
       }
     });
 
@@ -440,123 +494,47 @@ $(document).ready(function () {
       dropoffLocation: document.getElementById("dropoff").value,
       pickupDate: document.getElementById("pickup-date").value,
       pickupTime: document.getElementById("pickup-time").value,
-      selectedCar: document.querySelector(".car-option.selected")?.innerText,
+      selectedCar: document
+        .querySelector(".car-option.selected")
+        ?.querySelector("strong")
+        .textContent.trim(),
+      basicFee: document.getElementById("pricing-fee").innerText,
+      gratuity: document.getElementById("gratuity-fee").innerText || "N/A",
+      vipService: document.getElementById("vip-fee").innerText || "N/A",
+      tax: document.getElementById("tax-fee").innerText || "N/A",
+      finalPrice: document.getElementById("final-price").value,
     };
-
-    console.log(bookingInfo);
-    alert("Reservation confirmed!");
-    $.magnificPopup.close(); // Close the popup after successful submission
-
-    // Send the booking information to the backend
-    // fetch("/api/submit-form", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(bookingInfo),
-    // })
-    //   .then((response) => {
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     return response.json();
-    //   })
-    //   .then((data) => {
-    //     console.log(data); // Log the response from the backend
-    //     alert("Reservation confirmed!");
-    //     $.magnificPopup.close(); // Close the popup after successful submission
-    //   })
-    //   .catch((error) => {
-    //     console.error("There was a problem with the fetch operation:", error);
-    //     alert("There was an error submitting your form. Please try again.");
-    //   });
+    if (
+      document.getElementById("hourly-tab").classList.contains("active") &&
+      document.getElementById("hours").value < 1
+    ) {
+      document.getElementById("hours-error").innerText =
+        "This field is required!";
+      alert("Must specify duration for which vehicle is required!");
+      document.getElementById("hours").focus();
+    } else {
+      // Send the booking information to the backend
+      fetch("/api/submit-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingInfo),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          alert("Reservation confirmed!");
+          $.magnificPopup.close(); // Close the popup after successful submission
+        })
+        .catch((error) => {
+          console.error("There was a problem with the fetch operation:", error);
+          alert("There was an error submitting your form. Please try again.");
+        });
+    }
   });
 });
-
-// // Handle form submission
-// document
-//   .getElementById("reservation-form")
-//   .addEventListener("submit", function (e) {
-//     e.preventDefault();
-//     let bookingInfo = {
-//       passengers: document.getElementById("passengers").value,
-//       bags: document.getElementById("bags").value,
-//       firstName: document.getElementById("first-name").value,
-//       lastName: document.getElementById("last-name").value,
-//       email: document.getElementById("email").value,
-//       phone: document.getElementById("phone").value,
-//       flightNo: document.getElementById("flight-no").value || "N/A",
-//       additionalInfo: document.getElementById("additional-info").value || "N/A",
-//       pickupLocation: document.getElementById("pickup").value,
-//       dropoffLocation: document.getElementById("dropoff").value,
-//       pickupDate: document.getElementById("pickup-date").value,
-//       pickupTime: document.getElementById("pickup-time").value,
-//       selectedCar:
-//         document.querySelector(".car-option.selected")?.innerText ||
-//         "No car selected",
-//     };
-
-//     // Add validation checks for required fields
-//     const requiredFields = [
-//       "passengers",
-//       "bags",
-//       "first-name",
-//       "last-name",
-//       "email",
-//       "phone",
-//       "pickup-date",
-//       "pickup-time",
-//       "pickup",
-//       "dropoff",
-//     ];
-//     let isValid = true;
-
-//     requiredFields.forEach((fieldId) => {
-//       const field = document.getElementById(fieldId);
-//       const errorField = document.getElementById(fieldId + "-error");
-//       if (!field.value) {
-//         errorField.innerText = "This field is required!";
-//         isValid = false;
-//       } else {
-//         errorField.innerText = "";
-//       }
-//     });
-
-//     if (bookingInfo.selectedCar === "No car selected") {
-//       document.getElementById("car-option-error").innerText =
-//         "Please select a car.";
-//       isValid = false;
-//     } else {
-//       document.getElementById("car-option-error").innerText = "";
-//     }
-
-//     if (isValid) {
-//       alert("Form submitted successfully");
-//       // Send the booking information to the backend
-//       // fetch("/api/submit-form", {
-//       //   method: "POST",
-//       //   headers: {
-//       //     "Content-Type": "application/json",
-//       //   },
-//       //   body: JSON.stringify(bookingInfo),
-//       // })
-//       //   .then((response) => {
-//       //     if (!response.ok) {
-//       //       throw new Error("Network response was not ok");
-//       //     }
-//       //     return response.json();
-//       //   })
-//       //   .then((data) => {
-//       //     console.log(data); // Log the response from the backend
-//       //     alert("Form submitted successfully!");
-//       //     // Optionally, you could reset the form here
-//       //     document.getElementById("reservation-form").reset();
-//       //   })
-//       //   .catch((error) => {
-//       //     console.error("There was a problem with the fetch operation:", error);
-//       //     alert("There was an error submitting your form. Please try again.");
-//       //   });
-//     } else {
-//       alert("Missing required fields!");
-//     }
-//   });
