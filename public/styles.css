@@ -278,6 +278,8 @@ h1 {
   margin: 0 auto;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
 /* Popup action buttons */
