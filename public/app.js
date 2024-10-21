@@ -432,6 +432,7 @@ $(document).ready(function () {
 
     console.log(bookingInfo);
     alert("Reservation confirmed!");
+    $.magnificPopup.close(); // Close the popup after successful submission
 
     // Send the booking information to the backend
     // fetch("/api/submit-form", {
