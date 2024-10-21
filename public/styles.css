@@ -93,12 +93,13 @@ h1 {
   position: relative;
   margin: 20px 0;
   height: 300px;
+  width: 100%;
   border: 1px solid #ccc;
 }
 
 .map-overlay {
   position: absolute;
-  z-index: 20;
+  z-index: 50;
   top: 10px;
   right: 20px;
   background-color: rgba(0, 0, 0, 0.7);
@@ -249,6 +250,7 @@ h1 {
 .submit-btn {
   display: block;
   margin: auto;
+  margin-top: 40px;
   background-color: #daa520;
   color: white;
   padding: 20px 40px;

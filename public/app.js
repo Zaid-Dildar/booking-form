@@ -3,6 +3,10 @@
 const perHourRate = 150; // Example hourly rate, adjust as needed (20 currency units per hour)
 const perKilometerRate = 2; // Example rate, adjust as needed (5 currency units per kilometer)
 
+const mapResize = (map) => {
+  map.resize;
+};
+
 // Swiper
 const swiper = new Swiper(".swiper", {
   slidesPerView: 1, // Number of slides to show on mobile
@@ -86,6 +90,7 @@ fetch("/api/mapbox-token")
   .then((data) => {
     // Use the token to initialize Mapbox
     mapboxgl.accessToken = data.token;
+
     // Create the map instance and set size
     var map = new mapboxgl.Map({
       container: "map", // ID of the div to display the map
@@ -108,6 +113,13 @@ fetch("/api/mapbox-token")
         map.removeSource(routeLayerId);
       }
     }
+
+    // Resize map when submit button is clicked
+    document
+      .getElementById("reserve-btn")
+      .addEventListener("click", function () {
+        map.resize(); // Adjust map when modal/tab is shown
+      });
 
     // Function to get location suggestions from the server
     function getSuggestions(query, callback) {
@@ -179,6 +191,7 @@ fetch("/api/mapbox-token")
           suggestionsContainer.innerHTML = ""; // Clear suggestions if query is too short
         }
       });
+
       // Hide suggestions on blur
       inputField.addEventListener("blur", function () {
         setTimeout(() => {
