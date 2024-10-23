@@ -1,5 +1,9 @@
 // Client-side JavaScript for handling the mapbox and form
 
+function sendHeightToParent(height) {
+  window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
+}
+
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
 let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
 
@@ -11,34 +15,59 @@ let globalTimeFee = 0;
 let durationInHours = 0;
 let distanceInKm = 0;
 
-// Get the datepicker element and error message
+// Get the datepicker, timepicker, and error elements
 const datepicker = document.getElementById("pickup-date");
-const error = document.getElementById("pickup-date-close-error");
+const timepicker = document.getElementById("pickup-time");
+const dateError = document.getElementById("pickup-date-close-error");
+const timeError = document.getElementById("pickup-time-error");
 
-// Create a new Date object and add 24 hours to the current time
+// Get today's date and time
 const now = new Date();
-now.setDate(now.getDate() + 1); // Add 1 day (24 hours)
+const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Current day at midnight
+const threeHoursLater = new Date(now.getTime() + 3 * 60 * 60 * 1000); // 3 hours from now
 
-// Format the date to be compatible with the input type="date"
-const year = now.getFullYear();
-const month = (now.getMonth() + 1).toString().padStart(2, "0");
-const day = now.getDate().toString().padStart(2, "0");
-
-// Set the minimum date (at least 24 hours from now)
+// Set the minimum date (today's date) in the datepicker
+const year = today.getFullYear();
+const month = (today.getMonth() + 1).toString().padStart(2, "0");
+const day = today.getDate().toString().padStart(2, "0");
 datepicker.min = `${year}-${month}-${day}`;
 
-// Add an event listener to validate user input
+// Function to check if the user-selected date is today
+function isToday(selectedDate) {
+  return (
+    selectedDate.getFullYear() === today.getFullYear() &&
+    selectedDate.getMonth() === today.getMonth() &&
+    selectedDate.getDate() === today.getDate()
+  );
+}
+
+// Add event listener to validate the selected date
 datepicker.addEventListener("change", function () {
   const selectedDate = new Date(this.value);
-  const minimumDate = new Date();
-  minimumDate.setDate(minimumDate.getDate() + 1);
-
-  // Check if the selected date is at least 24 hours from now
-  if (selectedDate < minimumDate) {
-    error.style.display = "block"; // Show the error message
-    this.value = ""; // Reset the value if it's invalid
+  if (selectedDate < today) {
+    dateError.style.display = "block"; // Show the error message for invalid date
   } else {
-    error.style.display = "none"; // Hide the error message if valid
+    dateError.style.display = "none"; // Hide the error message for valid date
+  }
+});
+
+// Add event listener to validate the selected time
+timepicker.addEventListener("change", function () {
+  const selectedDate = new Date(datepicker.value);
+  const selectedTime = this.value.split(":");
+  const selectedTimeDate = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    parseInt(selectedTime[0]),
+    parseInt(selectedTime[1])
+  );
+
+  // Check if the selected date is today and if the time is at least 3 hours from now
+  if (isToday(selectedDate) && selectedTimeDate < threeHoursLater) {
+    timeError.style.display = "block"; // Show error for invalid time
+  } else {
+    timeError.style.display = "none"; // Hide error for valid time
   }
 });
 // Object to store prices for each car type
@@ -64,7 +93,6 @@ function setCarPrices(carType) {
     }
     globalTimeFee = perHourRate;
     updatePriceSummary(globalDistanceFee, globalTimeFee);
-    document.getElementById("hours").value = 1;
   }
 }
 
@@ -362,7 +390,6 @@ document.getElementById("distance-tab").addEventListener("click", function () {
 
 document.getElementById("hourly-tab").addEventListener("click", function () {
   document.getElementById("hours-row").classList.remove("hidden");
-  document.getElementById("hours").focus();
   document.getElementById("hourly-tab").classList.add("active");
   document.getElementById("distance-tab").classList.remove("active");
   updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
@@ -482,6 +509,14 @@ $(document).ready(function () {
       } else {
         document.getElementById("car-option-error").innerText = "";
       }
+      if (
+        document.getElementById("hourly-tab").classList.contains("active") &&
+        document.getElementById("hours").value < 1
+      ) {
+        document.getElementById("hours-error").innerText =
+          "This field is required!";
+        isValid = false;
+      }
     });
 
     if (isValid) {
@@ -493,15 +528,24 @@ $(document).ready(function () {
         },
         closeOnBgClick: true, // Close popup when clicking on backdrop
         showCloseBtn: false, // Hide default close button
+        callbacks: {
+          // Send message to parent when the popup is closed
+          close: function () {
+            sendHeightToParent(["2000px", "2300px"]);
+          },
+        },
       });
+      sendHeightToParent(["100vh", "100vh"]);
     } else {
+      sendHeightToParent(["2100px", "2400px"]);
       alert("Missing required fields!");
     }
   });
 
-  // Close popup on clicking "Edit" button
+  // Close popup on clicking "Cancel" button
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
+    sendHeightToParent(["2000px", "2300px"]);
     alert("Booking cancelled!");
   });
 
@@ -533,38 +577,30 @@ $(document).ready(function () {
       tax: document.getElementById("tax-fee").innerText || "N/A",
       finalPrice: document.getElementById("final-price").value,
     };
-    if (
-      document.getElementById("hourly-tab").classList.contains("active") &&
-      document.getElementById("hours").value < 1
-    ) {
-      document.getElementById("hours-error").innerText =
-        "This field is required!";
-      alert("Must specify duration for which vehicle is required!");
-      document.getElementById("hours").focus();
-    } else {
-      // Send the booking information to the backend
-      fetch("/api/submit-form", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingInfo),
+
+    // Send the booking information to the backend
+    fetch("/api/submit-form", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookingInfo),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          alert("Reservation confirmed!");
-          $.magnificPopup.close(); // Close the popup after successful submission
-          document.getElementById("reservation-form").reset();
-        })
-        .catch((error) => {
-          console.error("There was a problem with the fetch operation:", error);
-          alert("There was an error submitting your form. Please try again.");
-        });
-    }
+      .then((data) => {
+        alert("Reservation confirmed!");
+        $.magnificPopup.close(); // Close the popup after successful submission
+        sendHeightToParent(["2000px", "2300px"]);
+        document.getElementById("reservation-form").reset();
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+        alert("There was an error submitting your form. Please try again.");
+      });
   });
 });

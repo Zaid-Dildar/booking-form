@@ -42,6 +42,15 @@
       Reserve your luxurious airport limo service for a comfortable and timely
       travel experience today.
     </p>
+    <!-- Form Type Tabs (Distance or Hourly) -->
+    <div class="price-type-tabs">
+      <button type="button" id="distance-tab" class="tab-button active">
+        Distance-Based
+      </button>
+      <button type="button" id="hourly-tab" class="tab-button">
+        Hourly-Based
+      </button>
+    </div>
     <div class="form-container">
       <form id="reservation-form">
         <!-- Row 1: First Name and Last Name -->
@@ -100,20 +109,29 @@
           </div>
         </div>
 
+        <!-- No of Hours -->
+        <div id="hours-row" class="form row form-group hidden">
+          <label for="hours">No. of hours <span>*</span></label>
+          <input id="hours" name="hours" type="number" min="1" />
+          <div class="error-message" id="hours-error"></div>
+        </div>
+
         <!-- Date and Time Picker -->
         <div class="form-row">
           <div class="form-group">
             <label for="pickup-date">Pickup Date <span>*</span></label>
             <input type="date" id="pickup-date" name="pickup-date" />
-            <div class="error-message" id="pickup-date-error"></div>
+            <div class="error-message hidden" id="pickup-date-error"></div>
             <div class="error-message hidden" id="pickup-date-close-error">
-              Please select a date at least 24 hours from now.
+              Please select a valid date.
             </div>
           </div>
           <div class="form-group">
             <label for="pickup-time">Pickup Time <span>*</span></label>
             <input type="time" id="pickup-time" name="pickup-time" />
-            <div class="error-message" id="pickup-time-error"></div>
+            <div class="error-message hidden" id="pickup-time-error">
+              Please select a time at least 3 hours from now.
+            </div>
           </div>
         </div>
 
@@ -172,7 +190,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-1">
                 <img
-                  src="https://tse4.mm.bing.net/th?id=OIP.P0BMInnXUw80TgcgvD7xLAHaE6&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Mercedes-sprinter-van.png"
                   alt="Sprinter"
                 />
                 <p>
@@ -188,7 +206,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-2">
                 <img
-                  src="https://tse4.mm.bing.net/th?id=OIP.6YJFG8mnarCyCsHq0KEjjQHaEs&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Stretch-SUV.jpg"
                   alt="Stretch SUV"
                 />
                 <p>
@@ -204,7 +222,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-3">
                 <img
-                  src="https://tse4.mm.bing.net/th?id=OIP.NHLgMW7GCzTDwPKybHrZkwHaD1&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/SUV.png"
                   alt="SUV"
                 />
                 <p>
@@ -220,7 +238,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-4">
                 <img
-                  src="https://tse4.mm.bing.net/th?id=OIP.9Hq2YjHvd9NmV2NBTKBpDgHaEJ&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-Escalade-SUV.png"
                   alt="Cadillac Escalade"
                 />
                 <p>
@@ -236,7 +254,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-5">
                 <img
-                  src="https://tse2.mm.bing.net/th?id=OIP.jYo1WWUxBv5xpsHw4qNPNwHaE6&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
                   alt="Class Mercedes"
                 />
                 <p>
@@ -252,7 +270,7 @@
             <div class="swiper-slide">
               <div class="car-option" id="car-6">
                 <img
-                  src="https://tse2.mm.bing.net/th?id=OIP.aLJK0LXsgEEJVn91Hsbw-gHaDP&pid=Api&P=0&h=220"
+                  src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
                   alt="Sedan"
                 />
                 <p>
@@ -275,6 +293,14 @@
           <div class="swiper-button-prev"></div>
         </div>
 
+        <!-- Mapbox Map -->
+        <div class="map-container" id="map">
+          <!-- Distance and Time Info -->
+          <div class="map-overlay" id="directions-info">
+            Distance: N/A | Duration: N/A
+          </div>
+        </div>
+
         <!-- Submit Button -->
         <button id="reserve-btn" type="submit" class="submit-btn">
           Reserve
@@ -282,14 +308,6 @@
 
         <!-- Pop-up -->
         <div id="reservation-popup" class="white-popup mfp-hide">
-          <!-- Mapbox Map -->
-          <div class="map-container" id="map">
-            <!-- Distance and Time Info -->
-            <div class="map-overlay" id="directions-info">
-              Distance: N/A | Duration: N/A
-            </div>
-          </div>
-
           <!-- Gratuity Selection -->
           <div class="form-row">
             <div class="form-group">
@@ -331,25 +349,7 @@
             </div>
           </div>
 
-          <!-- No of Hours -->
-          <div id="hours-row" class="form row form-group hidden">
-            <label for="hours">No. of hours <span>*</span></label>
-            <input id="hours" name="hours" type="number" min="1" value="1" />
-            <div class="error-message" id="hours-error"></div>
-          </div>
-
           <!-- Price Summary Section -->
-          <!-- Price Type Tabs (Distance or Hourly) -->
-          <div class="price-type-tabs">
-            <button type="button" id="distance-tab" class="tab-button active">
-              Distance-Based
-            </button>
-            <button type="button" id="hourly-tab" class="tab-button">
-              Hourly-Based
-            </button>
-          </div>
-
-          <!-- Unified Price Summary Section -->
           <div id="price-summary" class="pricing-section active">
             <h2 id="pricing-title">Distance-Based Price Summary</h2>
             <div class="price-row">
