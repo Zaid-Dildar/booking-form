@@ -516,6 +516,8 @@ $(document).ready(function () {
         document.getElementById("hours-error").innerText =
           "This field is required!";
         isValid = false;
+      } else {
+        document.getElementById("hours-error").innerText = "";
       }
     });
 
