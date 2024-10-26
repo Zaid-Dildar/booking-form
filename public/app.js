@@ -4,6 +4,8 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
+let loop = true;
+
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
 let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
 
@@ -91,7 +93,7 @@ function setCarPrices(carType) {
     } else {
       globalDistanceFee = distanceInKm * perKilometerRate;
     }
-    globalTimeFee = perHourRate;
+    globalTimeFee = perHourRate * document.getElementById("hours").value;
     updatePriceSummary(globalDistanceFee, globalTimeFee);
   }
 }
@@ -107,6 +109,7 @@ const swiper = new Swiper(".swiper", {
   slidesPerView: 1, // Number of slides to show on mobile
   slidesPerGroup: 1, // Number of slides to scroll
   spaceBetween: 10, // Space between slides
+  autoplay: loop,
   pagination: {
     el: ".swiper-pagination",
     clickable: true,
@@ -470,6 +473,7 @@ carOptions.forEach(function (option) {
     this.classList.add("selected");
     const selectedCarType = this.querySelector("strong").textContent.trim();
     setCarPrices(selectedCarType);
+    loop = false;
   });
 });
 
@@ -533,13 +537,13 @@ $(document).ready(function () {
         callbacks: {
           // Send message to parent when the popup is closed
           close: function () {
-            sendHeightToParent(["2000px", "2300px"]);
+            sendHeightToParent(["1500px", "2200px"]);
           },
         },
       });
       sendHeightToParent(["100vh", "100vh"]);
     } else {
-      sendHeightToParent(["2100px", "2400px"]);
+      sendHeightToParent(["1700px", "2400px"]);
       alert("Missing required fields!");
     }
   });
@@ -547,7 +551,7 @@ $(document).ready(function () {
   // Close popup on clicking "Cancel" button
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
-    sendHeightToParent(["2000px", "2300px"]);
+    sendHeightToParent(["1500px", "2200px"]);
     alert("Booking cancelled!");
   });
 
@@ -597,7 +601,7 @@ $(document).ready(function () {
       .then((data) => {
         alert("Reservation confirmed!");
         $.magnificPopup.close(); // Close the popup after successful submission
-        sendHeightToParent(["2000px", "2300px"]);
+        sendHeightToParent(["1500px", "2200px"]);
         document.getElementById("reservation-form").reset();
       })
       .catch((error) => {
