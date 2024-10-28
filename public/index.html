@@ -34,6 +34,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
 
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -42,15 +45,7 @@
       Reserve your luxurious airport limo service for a comfortable and timely
       travel experience today.
     </p>
-    <!-- Form Type Tabs (Distance or Hourly) -->
-    <div class="price-type-tabs">
-      <button type="button" id="distance-tab" class="tab-button active">
-        Distance-Based
-      </button>
-      <button type="button" id="hourly-tab" class="tab-button">
-        Hourly-Based
-      </button>
-    </div>
+
     <div>
       <div class="main-content">
         <!-- Car options for sidebar (shown on desktop) -->
@@ -60,92 +55,115 @@
             <div class="error-message" id="car-option-error"></div>
           </h2>
           <div class="car-option" id="car-1">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Mercedes-sprinter-van.png"
-              alt="Sprinter"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Mercedes-sprinter-van.png"
+                alt="Sprinter"
+              />
+            </div>
             <p>
               <strong>Sprinter</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 11 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 11</span
               >
-              <span>Starting at - $325.00</span>
+              <span id="price-Sprinter">Starting at - $325.00</span>
             </p>
           </div>
           <div class="car-option" id="car-2">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Stretch-SUV.jpg"
-              alt="Stretch SUV"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Stretch-SUV.jpg"
+                alt="Stretch SUV"
+              />
+            </div>
             <p>
               <strong>Stretch SUV</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 10 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 10</span
               >
-              <span>Starting at - $349.00</span>
+              <span id="price-Stretch SUV">Starting at - $349.00</span>
             </p>
           </div>
           <div class="car-option" id="car-3">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/SUV.png"
-              alt="SUV"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/SUV.png"
+                alt="SUV"
+              />
+            </div>
             <p>
               <strong>SUV</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 6 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 4</span
               >
-              <span>Starting at - $120.00</span>
+              <span id="price-SUV">Starting at - $120.00</span>
             </p>
           </div>
           <div class="car-option" id="car-4">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-Escalade-SUV.png"
-              alt="Cadillac Escalade"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-Escalade-SUV.png"
+                alt="Cadillac Escalade"
+              />
+            </div>
             <p>
               <strong>Cadillac Escalade SUV</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 6 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 6</span
               >
-              <span>Starting at - $210.00</span>
+              <span id="price-Cadillac Escalade SUV"
+                >Starting at - $210.00</span
+              >
             </p>
           </div>
           <div class="car-option" id="car-5">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
-              alt="Class Mercedes"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
+                alt="Class Mercedes"
+              />
+            </div>
             <p>
               <strong>Class Mercedes</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 3 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 3</span
               >
-              <span>Starting at - $175.00</span>
+              <span id="price-Class Mercedes">Starting at - $175.00</span>
             </p>
           </div>
           <div class="car-option" id="car-6">
-            <img
-              src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
-              alt="Sedan"
-            />
+            <div class="car-option-image-container">
+              <img
+                src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
+                alt="Sedan"
+              />
+            </div>
             <p>
               <strong>Sedan</strong>
               <span
                 ><i class="fas fa-user" title="Passengers"></i> 2 ,
                 <i class="fas fa-suitcase" title="Bags"></i> 2</span
               >
-              <span>Starting at - $85.00</span>
+              <span id="price-Sedan">Starting at - $85.00</span>
             </p>
           </div>
         </div>
 
         <form id="reservation-form" class="form-container">
+          <!-- Form Type Tabs (Distance or Hourly) -->
+          <div class="price-type-tabs">
+            <button type="button" id="distance-tab" class="tab-button active">
+              Distance-Based
+            </button>
+            <button type="button" id="hourly-tab" class="tab-button">
+              Hourly-Based
+            </button>
+          </div>
           <!-- Row 1: First Name and Last Name -->
           <div class="form-row">
             <div class="form-group">
@@ -282,97 +300,111 @@
             <div class="swiper-wrapper">
               <div class="swiper-slide">
                 <div class="car-option" id="car-1">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Mercedes-sprinter-van.png"
-                    alt="Sprinter"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Mercedes-sprinter-van.png"
+                      alt="Sprinter"
+                    />
+                  </div>
                   <p>
                     <strong>Sprinter</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 11 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 11</span
                     >
-                    <span>Starting at - $325.00</span>
+                    <span id="price-Sprinter">Starting at - $325.00</span>
                   </p>
                 </div>
               </div>
               <div class="swiper-slide">
                 <div class="car-option" id="car-2">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Stretch-SUV.jpg"
-                    alt="Stretch SUV"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Stretch-SUV.jpg"
+                      alt="Stretch SUV"
+                    />
+                  </div>
                   <p>
                     <strong>Stretch SUV</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 10 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 10</span
                     >
-                    <span>Starting at - $349.00</span>
+                    <span id="price-Stretch SUV">Starting at - $349.00</span>
                   </p>
                 </div>
               </div>
               <div class="swiper-slide">
                 <div class="car-option" id="car-3">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/SUV.png"
-                    alt="SUV"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/SUV.png"
+                      alt="SUV"
+                    />
+                  </div>
                   <p>
                     <strong>SUV</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 6 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 4</span
                     >
-                    <span>Starting at - $120.00</span>
+                    <span id="price-SUV">Starting at - $120.00</span>
                   </p>
                 </div>
               </div>
               <div class="swiper-slide">
                 <div class="car-option" id="car-4">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-Escalade-SUV.png"
-                    alt="Cadillac Escalade"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-Escalade-SUV.png"
+                      alt="Cadillac Escalade"
+                    />
+                  </div>
                   <p>
                     <strong>Cadillac Escalade SUV</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 6 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 6</span
                     >
-                    <span>Starting at - $210.00</span>
+                    <span id="price-Cadillac Escalade SUV"
+                      >Starting at - $210.00</span
+                    >
                   </p>
                 </div>
               </div>
               <div class="swiper-slide">
                 <div class="car-option" id="car-5">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
-                    alt="Class Mercedes"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
+                      alt="Class Mercedes"
+                    />
+                  </div>
                   <p>
                     <strong>Class Mercedes</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 3 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 3</span
                     >
-                    <span>Starting at - $175.00</span>
+                    <span id="price-Class Mercedes">Starting at - $175.00</span>
                   </p>
                 </div>
               </div>
               <div class="swiper-slide">
                 <div class="car-option" id="car-6">
-                  <img
-                    src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
-                    alt="Sedan"
-                  />
+                  <div class="car-option-image-container">
+                    <img
+                      src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
+                      alt="Sedan"
+                    />
+                  </div>
                   <p>
                     <strong>Sedan</strong>
                     <span
                       ><i class="fas fa-user" title="Passengers"></i> 2 ,
                       <i class="fas fa-suitcase" title="Bags"></i> 2</span
                     >
-                    <span>Starting at - $85.00</span>
+                    <span id="price-Sedan">Starting at - $85.00</span>
                   </p>
                 </div>
               </div>
@@ -480,8 +512,44 @@
               value="0.00"
             />
 
+            <!-- Hidden input for storing payment method -->
+            <input
+              type="hidden"
+              id="payment-method"
+              name="payment_method"
+              value="cash"
+            />
+
+            <!-- Payment Method Selection -->
+            <div class="payment-method">
+              <h3>Select Payment Method</h3>
+              <button id="cash-btn" type="button" class="btn btn-success">
+                Cash
+              </button>
+              <button id="card-btn" type="button" class="btn btn-choice">
+                Credit Card
+              </button>
+            </div>
+
+            <!-- Stripe Card Payment Form (hidden initially) -->
+            <div id="card-payment-section" class="hidden">
+              <h3>Enter Card Details</h3>
+              <div id="card-element">
+                <!-- Stripe Element will be inserted here -->
+              </div>
+              <div id="card-errors" role="alert" class="error-message"></div>
+              <button
+                id="pay-now-btn"
+                type="button"
+                class="btn btn-success"
+                style="margin-top: 20px"
+              >
+                Pay Now
+              </button>
+            </div>
+
             <!-- Popup action buttons -->
-            <div class="popup-actions">
+            <div class="popup-actions" style="margin-top: 20px">
               <button id="confirm-btn" class="btn btn-success">Confirm</button>
               <button id="edit-btn" class="btn btn-secondary">Cancel</button>
             </div>

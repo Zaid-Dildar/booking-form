@@ -80,6 +80,31 @@ const carPrices = {
   Sedan: { hourly: 85, perKilometer: 1.97 },
 };
 
+function updateCarPrices() {
+  Object.keys(carPrices).forEach((carName) => {
+    let price = 0;
+
+    if (document.getElementById("hourly-tab").classList.contains("active")) {
+      // Calculate price based on hourly rate if duration is set
+      price =
+        carPrices[carName].hourly * document.getElementById("hours").value;
+    } else {
+      // Calculate price based on per kilometer rate if distance is set
+      if (durationInHours < 1) {
+        price = carPrices[carName].hourly;
+      } else {
+        price = carPrices[carName].perKilometer * distanceInKm;
+      }
+    }
+
+    // Update the price displayed on the page
+    const priceElement = document.getElementById(`price-${carName}`);
+    if (priceElement) {
+      priceElement.textContent = `Starting at - $${price.toFixed(2)}`;
+    }
+  });
+}
+
 // Function to set prices based on selected car
 function setCarPrices(carType) {
   if (carPrices[carType]) {
@@ -100,6 +125,7 @@ function setCarPrices(carType) {
 document.getElementById("hours").addEventListener("change", function () {
   globalTimeFee = this.value * perHourRate;
   updatePriceSummary(globalDistanceFee, globalTimeFee);
+  updateCarPrices();
 });
 
 // Swiper
@@ -117,7 +143,7 @@ const swiper = new Swiper(".swiper", {
     prevEl: ".swiper-button-prev",
   },
   breakpoints: {
-    991: {
+    768: {
       slidesPerView: 2, // Show 2 slide on desktop
     },
   },
@@ -324,13 +350,12 @@ fetch("/api/mapbox-token")
 
               // Display the distance, time, and fees info
               document.getElementById("directions-info").innerHTML = `
-                Distance: ${distanceInKm} km | Duration: ${Math.ceil(
+              Distance: ${distanceInKm} km | Duration: ${Math.ceil(
                 durationInMinutes
               )} mins `;
 
+              updateCarPrices();
               // Update the price summary for both distance and time-based pricing
-              updatePriceSummary(globalDistanceFee, globalTimeFee); // Pass both fees
-
               // Add the route to the map
               map.addSource(routeLayerId, {
                 type: "geojson",
@@ -387,6 +412,7 @@ document.getElementById("distance-tab").addEventListener("click", function () {
   document.getElementById("distance-tab").classList.add("active");
   document.getElementById("hourly-tab").classList.remove("active");
   updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
+  updateCarPrices();
 });
 
 document.getElementById("hourly-tab").addEventListener("click", function () {
@@ -394,6 +420,7 @@ document.getElementById("hourly-tab").addEventListener("click", function () {
   document.getElementById("hourly-tab").classList.add("active");
   document.getElementById("distance-tab").classList.remove("active");
   updatePriceSummary(globalDistanceFee, globalTimeFee); // Use global variables
+  updateCarPrices();
 });
 
 function updatePriceSummary(distanceFee = 0, timeFee = 0) {
@@ -476,6 +503,149 @@ carOptions.forEach(function (option) {
 });
 
 $(document).ready(function () {
+  // Initialize Stripe with your publishable key
+  const stripe = Stripe("pk_test_gg8pWvMfDrdZv8wAvKcUSU8A"); // Replace with your actual publishable key
+  const elements = stripe.elements();
+
+  // Optionally, add some basic styling
+  const style = {
+    base: {
+      iconColor: "#c4f0ff",
+      color: "#fff",
+      fontWeight: "500",
+      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+      fontSize: "16px",
+      fontSmoothing: "antialiased",
+      ":-webkit-autofill": {
+        color: "#fce883",
+      },
+      "::placeholder": {
+        color: "#87BBFD",
+      },
+    },
+    invalid: {
+      iconColor: "#FFC7EE",
+      color: "#FFC7EE",
+    },
+  };
+  const cardElement = elements.create("card", { style: style });
+  cardElement.mount("#card-element");
+
+  const cashBtn = document.getElementById("cash-btn");
+  const cardBtn = document.getElementById("card-btn");
+  const cardPaymentSection = document.getElementById("card-payment-section");
+  const confirmBtn = document.getElementById("confirm-btn");
+  const payNowBtn = document.getElementById("pay-now-btn");
+  const paymentMethodInput = document.getElementById("payment-method");
+
+  // Handle cash and card button clicks
+  cashBtn.addEventListener("click", () => {
+    cardPaymentSection.classList.add("hidden");
+    paymentMethodInput.value = "cash";
+    confirmBtn.classList.remove("hidden");
+    cardBtn.className = "btn btn-choice";
+    cashBtn.className = "btn btn-success";
+    payNowBtn.classList.add("hidden");
+  });
+
+  cardBtn.addEventListener("click", () => {
+    cardPaymentSection.classList.remove("hidden");
+    paymentMethodInput.value = "card";
+    confirmBtn.classList.add("hidden");
+    cashBtn.className = "btn btn-choice";
+    cardBtn.className = "btn btn-success";
+    payNowBtn.classList.remove("hidden");
+  });
+
+  // Handle the "Pay Now" button for card payment
+  payNowBtn.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    // Fetch payment intent from server
+    const response = await fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: calculateTotalAmount(), // You may need to adjust this to calculate the actual total
+      }),
+    });
+    const { clientSecret } = await response.json();
+
+    // Confirm the card payment
+    const { error } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
+    });
+
+    if (error) {
+      const errorField = document.getElementById("card-errors");
+      errorField.textContent = error.message;
+    } else {
+      alert("Payment successful!");
+      submitBookingForm();
+    }
+  });
+
+  function calculateTotalAmount() {
+    const totalElement = document.getElementById("total-price");
+    const totalValue = parseFloat(totalElement.innerText.replace("$", ""));
+    return Math.round(totalValue * 100); // Stripe uses cents
+  }
+
+  function submitBookingForm() {
+    let bookingInfo = {
+      passengers: document.getElementById("passengers").value,
+      bags: document.getElementById("bags").value,
+      firstName: document.getElementById("first-name").value,
+      lastName: document.getElementById("last-name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      flightNo: document.getElementById("flight-no").value || "N/A",
+      additionalInfo: document.getElementById("additional-info").value || "N/A",
+      pickupLocation: document.getElementById("pickup").value,
+      dropoffLocation: document.getElementById("dropoff").value,
+      pickupDate: document.getElementById("pickup-date").value,
+      pickupTime: document.getElementById("pickup-time").value,
+      selectedCar: document
+        .querySelector(".car-option.selected")
+        ?.querySelector("strong")
+        .textContent.trim(),
+      basicFee: document.getElementById("pricing-fee").innerText,
+      hours: document.getElementById("hours-row").classList.contains("hidden")
+        ? "N/A"
+        : document.getElementById("hours").value,
+      gratuity: document.getElementById("gratuity-fee").innerText || "N/A",
+      vipService: document.getElementById("vip-fee").innerText || "N/A",
+      tax: document.getElementById("tax-fee").innerText || "N/A",
+      finalPrice: document.getElementById("final-price").value,
+      paymentMethod: document.getElementById("payment-method").value,
+    };
+    // Send the booking information to the backend
+    fetch("/api/submit-form", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookingInfo),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        alert("Reservation confirmed!");
+        $.magnificPopup.close(); // Close the popup after successful submission
+        sendHeightToParent(["1500px", "2200px"]);
+        document.getElementById("reservation-form").reset();
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+        alert("There was an error submitting your form. Please try again.");
+      });
+  }
   // Initialize Magnific Popup
   $("#reserve-btn").on("click", function (e) {
     e.preventDefault();
@@ -555,56 +725,6 @@ $(document).ready(function () {
 
   // Handle confirm button action
   $("#confirm-btn").on("click", function () {
-    let bookingInfo = {
-      passengers: document.getElementById("passengers").value,
-      bags: document.getElementById("bags").value,
-      firstName: document.getElementById("first-name").value,
-      lastName: document.getElementById("last-name").value,
-      email: document.getElementById("email").value,
-      phone: document.getElementById("phone").value,
-      flightNo: document.getElementById("flight-no").value || "N/A",
-      additionalInfo: document.getElementById("additional-info").value || "N/A",
-      pickupLocation: document.getElementById("pickup").value,
-      dropoffLocation: document.getElementById("dropoff").value,
-      pickupDate: document.getElementById("pickup-date").value,
-      pickupTime: document.getElementById("pickup-time").value,
-      selectedCar: document
-        .querySelector(".car-option.selected")
-        ?.querySelector("strong")
-        .textContent.trim(),
-      basicFee: document.getElementById("pricing-fee").innerText,
-      hours: document.getElementById("hours-row").classList.contains("hidden")
-        ? "N/A"
-        : document.getElementById("hours").value,
-      gratuity: document.getElementById("gratuity-fee").innerText || "N/A",
-      vipService: document.getElementById("vip-fee").innerText || "N/A",
-      tax: document.getElementById("tax-fee").innerText || "N/A",
-      finalPrice: document.getElementById("final-price").value,
-    };
-
-    // Send the booking information to the backend
-    fetch("/api/submit-form", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bookingInfo),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        alert("Reservation confirmed!");
-        $.magnificPopup.close(); // Close the popup after successful submission
-        sendHeightToParent(["1500px", "2200px"]);
-        document.getElementById("reservation-form").reset();
-      })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-        alert("There was an error submitting your form. Please try again.");
-      });
+    submitBookingForm();
   });
 });

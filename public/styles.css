@@ -44,14 +44,13 @@ h1 {
   position: sticky;
   top: 0;
   align-self: flex-start; /* <-- this is the fix */
-  width: 25%; /* Sidebar will take up 30% of the width */
   padding-right: 20px;
   border-right: 2px solid #ccc;
 }
 
 .form-container {
   width: 50%; /* Form will take up 70% of the width */
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   background-color: #2c2c2c;
   border-radius: 0 0 10px 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -177,11 +176,10 @@ h1 {
 .car-option {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  padding-right: 1em;
   border: 5px solid #ccc;
   border-radius: 8px;
-  height: 7rem;
   cursor: pointer;
   text-align: center;
   transition: border-color 0.3s;
@@ -198,15 +196,24 @@ h1 {
 }
 
 .car-option img {
-  width: 40%; /* Responsive images */
-  min-height: 100%;
+  width: auto; /* Responsive images */
+  height: 100%;
+  max-height: 5rem;
   background-color: #fff;
 }
 
+.car-option-image-container {
+  background-color: #fff;
+  width: auto;
+}
+
 .car-option p {
+  font-size: small;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  padding: 0 1em;
+  margin: auto;
 }
 
 .error-message {
@@ -233,10 +240,11 @@ h1 {
 }
 
 .price-type-tabs {
-  max-width: calc(50% + 40px);
-  margin-left: calc(37.5% + 0.5px);
   display: flex;
   justify-content: space-around;
+  margin-bottom: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
 }
 
 .tab-button {
@@ -357,6 +365,16 @@ h1 {
 .btn-secondary:hover {
   background-color: red;
 }
+.btn-choice {
+  background-color: #6c757d;
+  color: #fff;
+}
+.btn-choice:hover {
+  background-color: #daa520;
+}
+.card-payment-section {
+  padding: 20px;
+}
 
 .hidden {
   display: none;
@@ -386,24 +404,26 @@ h1 {
     display: block;
   }
   .car-option {
-    display: block;
+    flex-direction: column;
     padding: 0;
-    width: -webkit-fill-available;
-    height: calc(10% - 10px);
+    /* height: calc(10% - 10px); */
   }
   .car-option img {
-    min-width: 100%;
+    width: auto;
+    height: auto;
+  }
+  .car-option-image-container {
+    width: 100%;
+  }
+  .car-option p {
+    gap: 10px;
+    margin: 10px 0;
   }
   .map-overlay {
     top: auto;
     right: auto;
     left: auto;
     margin: 10px;
-  }
-
-  .price-type-tabs {
-    margin: auto;
-    max-width: 100%;
   }
 
   /* Hide sidebar on mobile */
