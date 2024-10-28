@@ -4,8 +4,6 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
-let loop = true;
-
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
 let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
 
@@ -109,7 +107,7 @@ const swiper = new Swiper(".swiper", {
   slidesPerView: 1, // Number of slides to show on mobile
   slidesPerGroup: 1, // Number of slides to scroll
   spaceBetween: 10, // Space between slides
-  autoplay: loop,
+  autoplay: true,
   pagination: {
     el: ".swiper-pagination",
     clickable: true,
@@ -469,11 +467,11 @@ function updatePriceSummary(distanceFee = 0, timeFee = 0) {
 const carOptions = document.querySelectorAll(".car-option");
 carOptions.forEach(function (option) {
   option.addEventListener("click", function () {
+    swiper.autoplay.stop();
     carOptions.forEach((opt) => opt.classList.remove("selected"));
     this.classList.add("selected");
     const selectedCarType = this.querySelector("strong").textContent.trim();
     setCarPrices(selectedCarType);
-    loop = false;
   });
 });
 
