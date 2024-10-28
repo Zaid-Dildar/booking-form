@@ -36,7 +36,7 @@ export default async (req, res) => {
       <p><strong>Vip Service:</strong> ${bookingInfo.vipService}</p>
       <p><strong>Tax:</strong> ${bookingInfo.tax}</p>
       <p><strong>Total Fee:</strong> $${bookingInfo.finalPrice}</p>
-      <p><strong>Payment Method:</strong> $${bookingInfo.paymentMethod}</p>
+      <p><strong>Payment Method:</strong> ${bookingInfo.paymentMethod}</p>
     `,
   };
 
