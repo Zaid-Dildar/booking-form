@@ -21,30 +21,52 @@ const timepicker = document.getElementById("pickup-time");
 const dateError = document.getElementById("pickup-date-close-error");
 const timeError = document.getElementById("pickup-time-error");
 
-// Get today's date and time
+// Get the current time in UTC
 const now = new Date();
-const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Current day at midnight
-const threeHoursLater = new Date(now.getTime() + 3 * 60 * 60 * 1000); // 3 hours from now
+const nowUTC = new Date(
+  Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes()
+  )
+);
+
+// Get today's date at midnight in UTC
+const todayUTC = new Date(
+  Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+);
+
+// Calculate 3 hours later from now in UTC
+const threeHoursLaterUTC = new Date(nowUTC.getTime() + 3 * 60 * 60 * 1000);
 
 // Set the minimum date (today's date) in the datepicker
-const year = today.getFullYear();
-const month = (today.getMonth() + 1).toString().padStart(2, "0");
-const day = today.getDate().toString().padStart(2, "0");
+const year = todayUTC.getUTCFullYear();
+const month = (todayUTC.getUTCMonth() + 1).toString().padStart(2, "0");
+const day = todayUTC.getUTCDate().toString().padStart(2, "0");
 datepicker.min = `${year}-${month}-${day}`;
 
-// Function to check if the user-selected date is today
-function isToday(selectedDate) {
+// Function to check if the user-selected date is today in UTC
+function isTodayUTC(selectedDate) {
   return (
-    selectedDate.getFullYear() === today.getFullYear() &&
-    selectedDate.getMonth() === today.getMonth() &&
-    selectedDate.getDate() === today.getDate()
+    selectedDate.getUTCFullYear() === todayUTC.getUTCFullYear() &&
+    selectedDate.getUTCMonth() === todayUTC.getUTCMonth() &&
+    selectedDate.getUTCDate() === todayUTC.getUTCDate()
   );
 }
 
 // Add event listener to validate the selected date
 datepicker.addEventListener("change", function () {
   const selectedDate = new Date(this.value);
-  if (selectedDate < today) {
+  const selectedDateUTC = new Date(
+    Date.UTC(
+      selectedDate.getUTCFullYear(),
+      selectedDate.getUTCMonth(),
+      selectedDate.getUTCDate()
+    )
+  );
+  if (selectedDateUTC < todayUTC) {
     dateError.style.display = "block"; // Show the error message for invalid date
   } else {
     dateError.style.display = "none"; // Hide the error message for valid date
@@ -63,13 +85,17 @@ timepicker.addEventListener("change", function () {
     parseInt(selectedTime[1])
   );
 
-  // Check if the selected date is today and if the time is at least 3 hours from now
-  if (isToday(selectedDate) && selectedTimeDate < threeHoursLater) {
+  console.log("threeHoursLaterUTC", threeHoursLaterUTC);
+  console.log("todayUTC", todayUTC);
+  console.log("selectedTimeDateUTC", selectedTimeDate);
+  // Check if the selected date is today in UTC and if the time is at least 3 hours from now in UTC
+  if (isTodayUTC(selectedDate) && selectedTimeDate < threeHoursLaterUTC) {
     timeError.style.display = "block"; // Show error for invalid time
   } else {
     timeError.style.display = "none"; // Hide error for valid time
   }
 });
+
 // Object to store prices for each car type
 const carPrices = {
   Sprinter: { hourly: 325, perKilometer: 5.5 },
