@@ -8,7 +8,12 @@ export default async (req, res) => {
   }
 
   const bookingInfo = req.body;
-  const bookingTime = new Date().toLocaleString();
+
+  // Set booking time based on a specific time zone (e.g., America/Toronto for Canada)
+  const bookingTime = new Date().toLocaleString("en-US", {
+    timeZone: "America/Toronto",
+    hour12: true, // Optional: Set to true if you prefer 12-hour format
+  });
 
   const msg = {
     to: "rzdildar2002@gmail.com",
