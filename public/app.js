@@ -121,6 +121,53 @@ function setCarPrices(carType) {
   }
 }
 
+// Updating Cars based on no. of passengers and bags
+const passengers = document.getElementById("passengers");
+const bags = document.getElementById("bags");
+
+function passengersAndBagsChangeHandler() {
+  if (passengers.value > 2 || bags.value > 2) {
+    document.getElementById("car-6").classList.add("hidden");
+    hideSlides((index) => index === 5);
+  } else {
+    document.getElementById("car-6").classList.remove("hidden");
+    hideSlides((index) => index === 10);
+  }
+  if (passengers.value > 3 || bags.value > 3) {
+    document.getElementById("car-5").classList.add("hidden");
+    hideSlides((index) => index === 5 || index === 4);
+  } else {
+    document.getElementById("car-5").classList.remove("hidden");
+  }
+  if (passengers.value > 6 || bags.value > 4) {
+    document.getElementById("car-3").classList.add("hidden");
+    hideSlides((index) => index === 2 || index === 5 || index === 4);
+  } else {
+    document.getElementById("car-3").classList.remove("hidden");
+  }
+  if (passengers.value > 6 || bags.value > 6) {
+    document.getElementById("car-4").classList.add("hidden");
+    hideSlides(
+      (index) => index === 4 || index === 3 || index === 5 || index === 2
+    );
+  } else {
+    document.getElementById("car-4").classList.remove("hidden");
+  }
+  if (passengers.value > 10 || bags.value > 10) {
+    document.getElementById("car-2").classList.add("hidden");
+    hideSlides(
+      (index) =>
+        index === 1 || index === 3 || index === 2 || index === 4 || index === 5
+    );
+  } else {
+    document.getElementById("car-2").classList.remove("hidden");
+  }
+}
+
+passengers.addEventListener("change", passengersAndBagsChangeHandler);
+
+bags.addEventListener("change", passengersAndBagsChangeHandler);
+
 // calculating globalTieFee
 document.getElementById("hours").addEventListener("change", function () {
   globalTimeFee = this.value * perHourRate;
@@ -148,6 +195,23 @@ const swiper = new Swiper(".swiper", {
     },
   },
 });
+
+// Function to hide specific slides based on a condition
+function hideSlides(condition) {
+  // Get all Swiper slides
+  const slides = document.querySelectorAll(".swiper-slide");
+
+  slides.forEach((slide, index) => {
+    if (condition(index, slide)) {
+      slide.classList.add("hidden"); // Hide the slide
+    } else {
+      slide.classList.remove("hidden"); // Show the slide if it was previously hidden
+    }
+  });
+
+  // Update Swiper to reflect the hidden slides
+  swiper.update();
+}
 
 // Handle gratuity selection
 const gratuitySelect = document.getElementById("gratuity");
@@ -347,6 +411,9 @@ fetch("/api/mapbox-token")
                 globalDistanceFee = distanceInKm * perKilometerRate;
               }
               updatePriceSummary(globalDistanceFee, globalTimeFee);
+              document.getElementById("hours").value =
+                Math.ceil(durationInHours);
+              document.getElementById("hours").min = Math.ceil(durationInHours);
 
               // Display the distance, time, and fees info
               document.getElementById("directions-info").innerHTML = `
@@ -426,7 +493,7 @@ document.getElementById("hourly-tab").addEventListener("click", function () {
 function updatePriceSummary(distanceFee = 0, timeFee = 0) {
   // Constants and initial setup
   const taxRate = 0.13;
-  const vipFee = vipCheckbox.value === "yes" ? 100 : 0; // Example VIP fee
+  const vipFee = vipCheckbox.value === "yes" ? 50 : 0; // Example VIP fee
   let gratuity = 0;
 
   // Determine the active pricing tab
@@ -528,7 +595,10 @@ $(document).ready(function () {
       color: "#FFC7EE",
     },
   };
-  const cardElement = elements.create("card", { style: style });
+  const cardElement = elements.create("card", {
+    style: style,
+    hidePostalCode: true,
+  });
   cardElement.mount("#card-element");
 
   const cashBtn = document.getElementById("cash-btn");

@@ -205,14 +205,16 @@ h1 {
 .car-option-image-container {
   background-color: #fff;
   width: auto;
+  padding: 1em;
+  border-radius: 3px 0 0 3px;
 }
 
 .car-option p {
-  font-size: small;
+  /* font-size: small; */
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 0 1em;
+  gap: 10px;
+  padding: 1em;
   margin: auto;
 }
 
@@ -414,6 +416,8 @@ h1 {
   }
   .car-option-image-container {
     width: 100%;
+    padding: 1em 0;
+    border-radius: 3px 3px 0 0;
   }
   .car-option p {
     gap: 10px;
