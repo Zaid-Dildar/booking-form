@@ -779,7 +779,7 @@ $(document).ready(function () {
       }
     });
 
-    if (isValid) {
+    if (!isValid) {
       // Show the popup if the form is valid
       $.magnificPopup.open({
         items: {
