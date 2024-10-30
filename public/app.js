@@ -12,7 +12,7 @@ let globalDistanceFee = 0;
 let globalTimeFee = 0;
 
 // Global variables to store calculated distance and time
-let durationInHours = 0;
+let durationInHours = 1;
 let distanceInKm = 0;
 
 // Get the datepicker, timepicker, and error elements
@@ -180,12 +180,42 @@ function passengersAndBagsChangeHandler() {
   }
 }
 
+passengers.addEventListener("input", function () {
+  if (parseInt(this.value, 10) < 1) {
+    this.value = 1;
+  } else if (parseInt(this.value, 10) > 11) {
+    this.value = 11;
+  }
+});
 passengers.addEventListener("change", passengersAndBagsChangeHandler);
 
+bags.addEventListener("input", function () {
+  if (parseInt(this.value, 10) < 0) {
+    this.value = 0;
+  } else if (parseInt(this.value, 10) > 11) {
+    this.value = 11;
+  }
+});
 bags.addEventListener("change", passengersAndBagsChangeHandler);
 
+const hoursInput = document.getElementById("hours");
+
+// Add an event listener to prevent typing a value lower than the minimum
+hoursInput.addEventListener("input", function () {
+  if (parseInt(hoursInput.value, 10) < Math.ceil(durationInHours)) {
+    hoursInput.value = Math.ceil(durationInHours);
+  }
+  !hoursInput.value === false && updateCarPrices();
+});
+hoursInput.addEventListener("blur", function () {
+  if (!hoursInput.value) {
+    hoursInput.value = 1;
+    updateCarPrices();
+  }
+});
+
 // calculating globalTieFee
-document.getElementById("hours").addEventListener("change", function () {
+hoursInput.addEventListener("change", function () {
   globalTimeFee = this.value * perHourRate;
   updatePriceSummary(globalDistanceFee, globalTimeFee);
   updateCarPrices();
@@ -426,19 +456,25 @@ fetch("/api/mapbox-token")
               } else {
                 globalDistanceFee = distanceInKm * perKilometerRate;
               }
-              updatePriceSummary(globalDistanceFee, globalTimeFee);
-              document.getElementById("hours").value =
-                Math.ceil(durationInHours);
-              document.getElementById("hours").min = Math.ceil(durationInHours);
 
+              const minHours = Math.ceil(durationInHours);
+
+              // Set the minimum value
+              hoursInput.value = minHours;
+              hoursInput.min = minHours;
+              durationInHours = minHours;
+              globalTimeFee = perHourRate * durationInHours;
               // Display the distance, time, and fees info
               document.getElementById("directions-info").innerHTML = `
               Distance: ${distanceInKm} km | Duration: ${Math.ceil(
                 durationInMinutes
               )} mins `;
 
-              updateCarPrices();
               // Update the price summary for both distance and time-based pricing
+
+              updatePriceSummary(globalDistanceFee, globalTimeFee);
+              updateCarPrices();
+
               // Add the route to the map
               map.addSource(routeLayerId, {
                 type: "geojson",
@@ -511,7 +547,6 @@ function updatePriceSummary(distanceFee = 0, timeFee = 0) {
   const taxRate = 0.13;
   const vipFee = vipCheckbox.value === "yes" ? 50 : 0; // Example VIP fee
   let gratuity = 0;
-
   // Determine the active pricing tab
   const isHourlyTab = document
     .getElementById("hourly-tab")
