@@ -114,9 +114,11 @@ function updateCarPrices() {
     }
 
     // Update the price displayed on the page
-    const priceElement = document.getElementById(`price-${carName}`);
-    if (priceElement) {
-      priceElement.textContent = `Starting at - $${price.toFixed(2)}`;
+    const priceElements = document.getElementsByClassName(`price-${carName}`);
+    for (let i = 0; i < priceElements.length; i++) {
+      if (priceElements[i]) {
+        priceElements[i].textContent = `Starting at - $${price.toFixed(2)}`;
+      }
     }
   });
 }
