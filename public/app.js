@@ -106,7 +106,6 @@ function updateCarPrices() {
       price =
         carPrices[carName].hourly * document.getElementById("hours").value;
     } else {
-      console.log("ss", durationInHours);
       // Calculate price based on per kilometer rate if distance is set
       if (durationInHours <= 1 || distanceInKm == 0) {
         price = carPrices[carName].hourly;
@@ -496,14 +495,11 @@ fetch("/api/mapbox-token")
           durationInHours = (route.duration / 3600).toFixed(2);
           var durationInMinutes = (route.duration / 60).toFixed(2);
 
-          console.log(perHourRate);
           if (durationInHours < 1) {
             globalDistanceFee = perHourRate;
           } else {
             globalDistanceFee = distanceInKm * perKilometerRate;
           }
-          console.log(durationInHours);
-          console.log(globalDistanceFee);
 
           const minHours = Math.ceil(durationInHours);
 
@@ -551,7 +547,6 @@ fetch("/api/mapbox-token")
           map.fitBounds(bounds, { padding: 50, maxZoom: 14 });
         }
       } else {
-        console.log("hello");
         hoursInput.value = 1;
         hoursInput.min = 1;
         distanceInKm = 0;
