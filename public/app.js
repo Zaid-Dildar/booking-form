@@ -19,7 +19,7 @@ let distanceInKm = 0;
 const datepicker = document.getElementById("pickup-date");
 const timepicker = document.getElementById("pickup-time");
 const dateError = document.getElementById("pickup-date-close-error");
-const timeError = document.getElementById("pickup-time-error");
+const timeError = document.getElementById("pickup-time-close-error");
 
 // Get the current time in UTC
 const now = new Date();
@@ -797,7 +797,7 @@ $(document).ready(function () {
       .then((data) => {
         alert("Reservation confirmed!");
         $.magnificPopup.close(); // Close the popup after successful submission
-        sendHeightToParent(["1500px", "2200px"]);
+        sendHeightToParent(["1600px", "2300px"]);
         document.getElementById("reservation-form").reset();
       })
       .catch((error) => {
@@ -864,7 +864,7 @@ $(document).ready(function () {
         callbacks: {
           // Send message to parent when the popup is closed
           close: function () {
-            sendHeightToParent(["1500px", "2200px"]);
+            sendHeightToParent(["1600px", "2300px"]);
           },
         },
       });
@@ -878,12 +878,12 @@ $(document).ready(function () {
   // Close popup on clicking "Edit" button
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
-    sendHeightToParent(["1500px", "2200px"]);
+    sendHeightToParent(["1600px", "2300px"]);
   });
   // Close popup on clicking "Cancel" button
   $("#cancel-btn").on("click", function () {
     $.magnificPopup.close();
-    sendHeightToParent(["1500px", "2200px"]);
+    sendHeightToParent(["1600px", "2300px"]);
     alert("Booking cancelled!");
   });
 
