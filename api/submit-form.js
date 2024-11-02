@@ -16,8 +16,8 @@ export default async (req, res) => {
   });
 
   const msg = {
-    to: "rzdildar2002@gmail.com",
-    from: "zaiddildar2002@gmail.com",
+    to: "info@torontolimocars.ca",
+    from: "info@torontolimocars.ca",
     subject: `New Booking - ${bookingTime}`,
     html: `
       <h2>New Booking Details</h2>
@@ -32,6 +32,7 @@ export default async (req, res) => {
       <p><strong>Additional Information:</strong> ${bookingInfo.additionalInfo}</p>
       <p><strong>Pickup Location:</strong> ${bookingInfo.pickupLocation}</p>
       <p><strong>Dropoff Location:</strong> ${bookingInfo.dropoffLocation}</p>
+      <p><strong>Additional Location:</strong> ${bookingInfo.additionalLocation}</p>
       <p><strong>Pickup Date:</strong> ${bookingInfo.pickupDate}</p>
       <p><strong>Pickup Time:</strong> ${bookingInfo.pickupTime}</p>
       <p><strong>Selected Car:</strong> ${bookingInfo.selectedCar}</p>

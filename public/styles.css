@@ -280,13 +280,13 @@ h1 {
   margin-bottom: 20px;
 }
 
-.pricing-section .price-row {
+.price-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.pricing-section .price-row.total {
+.price-row.total {
   font-weight: bold;
 }
 

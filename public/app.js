@@ -92,6 +92,7 @@ const carPrices = {
   "Stretch SUV": { hourly: 349, perKilometer: 6.5 },
   SUV: { hourly: 120, perKilometer: 2.55 },
   "Cadillac Escalade SUV": { hourly: 210, perKilometer: 2.95 },
+  "Mid-Size SUV": { hourly: 150, perKilometer: 2.2 },
   "Class Mercedes": { hourly: 175, perKilometer: 2.75 },
   Sedan: { hourly: 85, perKilometer: 1.97 },
 };
@@ -105,8 +106,9 @@ function updateCarPrices() {
       price =
         carPrices[carName].hourly * document.getElementById("hours").value;
     } else {
+      console.log("ss", durationInHours);
       // Calculate price based on per kilometer rate if distance is set
-      if (durationInHours < 1) {
+      if (durationInHours <= 1 || distanceInKm == 0) {
         price = carPrices[carName].hourly;
       } else {
         price = carPrices[carName].perKilometer * distanceInKm;
@@ -319,24 +321,24 @@ gratuitySelect.addEventListener("change", function () {
 fetch("/api/mapbox-token")
   .then((response) => response.json())
   .then((data) => {
-    // Use the token to initialize Mapbox
+    // Initialize Mapbox with the token
     mapboxgl.accessToken = data.token;
 
-    // Create the map instance and set size
-    var map = new mapboxgl.Map({
-      container: "map", // ID of the div to display the map
+    const map = new mapboxgl.Map({
+      container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-79.5, 43.5], // Initial map center [lng, lat]
-      zoom: 9, // Initial map zoom level
+      center: [-79.5, 43.5],
+      zoom: 9,
     });
 
-    var pickupMarker = null;
-    var dropoffMarker = null;
-    var routeLayerId = "route";
-    var pickupCoordinates = null;
-    var dropoffCoordinates = null;
+    let pickupMarker = null;
+    let dropoffMarker = null;
+    let additionalMarker = null;
+    let routeLayerId = "route";
+    let pickupCoordinates = null;
+    let dropoffCoordinates = null;
+    let additionalCoordinates = null;
 
-    // Clear previous marker and route
     function clearPrevious(marker) {
       if (marker) marker.remove();
       if (map.getLayer(routeLayerId)) {
@@ -349,10 +351,9 @@ fetch("/api/mapbox-token")
     document
       .getElementById("reserve-btn")
       .addEventListener("click", function () {
-        map.resize(); // Adjust map when modal/tab is shown
+        map.resize();
       });
 
-    // Function to get location suggestions from the server
     function getSuggestions(query, callback) {
       fetch(`/api/mapbox/geocode?q=${query}`)
         .then((response) => response.json())
@@ -363,53 +364,80 @@ fetch("/api/mapbox-token")
         });
     }
 
-    // Autocomplete functionality for pickup and dropoff fields
+    function clearRouteAndMarker(type) {
+      // Clear the route layer
+      clearPrevious(null);
+
+      // Set specific coordinates to null if fields are empty
+      if (type === "pickup") {
+        pickupCoordinates = null;
+        clearPrevious(pickupMarker);
+        durationInHours = 1;
+      }
+      if (type === "dropoff") {
+        dropoffCoordinates = null;
+        clearPrevious(dropoffMarker);
+        durationInHours = 1;
+      }
+      if (type === "additional") {
+        additionalCoordinates = null;
+        clearPrevious(additionalMarker);
+      }
+      fetchDirections();
+    }
+
     function autocomplete(inputId, suggestionId, type) {
-      var inputField = document.getElementById(inputId);
-      var suggestionsContainer = document.getElementById(suggestionId);
+      const inputField = document.getElementById(inputId);
+      const suggestionsContainer = document.getElementById(suggestionId);
 
       inputField.addEventListener("input", function () {
-        var query = this.value;
+        const query = this.value;
+
+        if (!query) {
+          clearRouteAndMarker(type);
+          return;
+        }
+
         if (query.length > 2) {
-          getSuggestions(query, function (suggestions) {
-            // Clear existing suggestions
+          getSuggestions(query, (suggestions) => {
             suggestionsContainer.innerHTML = "";
 
-            // Add new suggestions as <li> elements
-            suggestions.forEach(function (suggestion) {
-              var listItem = document.createElement("div");
+            suggestions.forEach((suggestion) => {
+              const listItem = document.createElement("div");
               listItem.textContent = suggestion.place_name;
               listItem.className = "suggestion-item";
               listItem.dataset.lng = suggestion.center[0];
               listItem.dataset.lat = suggestion.center[1];
 
-              // Handle suggestion click
               listItem.addEventListener("click", function () {
                 inputField.value = suggestion.place_name;
-                suggestionsContainer.innerHTML = ""; // Clear suggestions
+                suggestionsContainer.innerHTML = "";
 
-                var lng = suggestion.center[0];
-                var lat = suggestion.center[1];
+                const lng = suggestion.center[0];
+                const lat = suggestion.center[1];
 
-                // Clear previous markers and add new marker
                 if (type === "pickup") {
                   clearPrevious(pickupMarker);
                   pickupMarker = new mapboxgl.Marker()
                     .setLngLat([lng, lat])
                     .addTo(map);
                   pickupCoordinates = [lng, lat];
-                } else {
+                } else if (type === "dropoff") {
                   clearPrevious(dropoffMarker);
                   dropoffMarker = new mapboxgl.Marker()
                     .setLngLat([lng, lat])
                     .addTo(map);
                   dropoffCoordinates = [lng, lat];
+                } else if (type === "additional") {
+                  clearPrevious(additionalMarker);
+                  additionalMarker = new mapboxgl.Marker()
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+                  additionalCoordinates = [lng, lat];
                 }
 
-                // Fly to selected location
                 map.flyTo({ center: [lng, lat], zoom: 12 });
 
-                // Fetch route if both pickup and dropoff are selected
                 if (pickupCoordinates && dropoffCoordinates) {
                   fetchDirections();
                 }
@@ -419,109 +447,107 @@ fetch("/api/mapbox-token")
             });
           });
         } else {
-          suggestionsContainer.innerHTML = ""; // Clear suggestions if query is too short
+          suggestionsContainer.innerHTML = "";
         }
       });
 
-      // Hide suggestions on blur
       inputField.addEventListener("blur", function () {
         setTimeout(() => {
-          suggestionsContainer.innerHTML = ""; // Clear suggestions after a short delay to allow click event to register
+          suggestionsContainer.innerHTML = "";
         }, 300);
       });
     }
 
-    // Fetch directions automatically once both pickup and dropoff are selected
-    function fetchDirections() {
-      if (pickupCoordinates && dropoffCoordinates) {
-        // Clear any previous route
-        clearPrevious(null);
+    async function fetchDirections() {
+      const coordinates = [
+        pickupCoordinates,
+        additionalCoordinates,
+        dropoffCoordinates,
+      ].filter(Boolean);
+      const coordinateString = coordinates
+        .map((coord) => coord.join(","))
+        .join(";");
 
-        const start = pickupCoordinates.join(",");
-        const end = dropoffCoordinates.join(",");
+      if (coordinates.length > 1) {
+        const response = await fetch(
+          `/api/mapbox/directions?coordinates=${coordinateString}`
+        );
+        const data = await response.json();
 
-        fetch(`/api/mapbox/directions?start=${start}&end=${end}`)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.routes && data.routes.length > 0) {
-              var route = data.routes[0];
-              var routeCoordinates = route.geometry.coordinates;
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          const routeCoordinates = route.geometry.coordinates;
 
-              // Calculate distance and time
-              distanceInKm = (route.distance / 1000).toFixed(2); // Convert to km
-              durationInHours = (route.duration / 3600).toFixed(2); // Convert to hours
-              var durationInMinutes = (route.duration / 60).toFixed(2); // Convert to minutes
+          distanceInKm = (route.distance / 1000).toFixed(2);
+          durationInHours = (route.duration / 3600).toFixed(2);
+          var durationInMinutes = (route.duration / 60).toFixed(2);
 
-              // Calculate distance-based fee
-              if (durationInHours < 1) {
-                globalDistanceFee = perHourRate;
-              } else {
-                globalDistanceFee = distanceInKm * perKilometerRate;
-              }
+          console.log(perHourRate);
+          if (durationInHours < 1) {
+            globalDistanceFee = perHourRate;
+          } else {
+            globalDistanceFee = distanceInKm * perKilometerRate;
+          }
+          console.log(durationInHours);
+          console.log(globalDistanceFee);
 
-              const minHours = Math.ceil(durationInHours);
+          const minHours = Math.ceil(durationInHours);
 
-              // Set the minimum value
-              hoursInput.value = minHours;
-              hoursInput.min = minHours;
-              durationInHours = minHours;
-              globalTimeFee = perHourRate * durationInHours;
-              // Display the distance, time, and fees info
-              document.getElementById("directions-info").innerHTML = `
-              Distance: ${distanceInKm} km | Duration: ${Math.ceil(
-                durationInMinutes
-              )} mins `;
+          hoursInput.value = minHours;
+          hoursInput.min = minHours;
+          durationInHours = minHours;
+          globalTimeFee = perHourRate * durationInHours;
 
-              // Update the price summary for both distance and time-based pricing
+          document.getElementById("directions-info").innerHTML = `
+                Distance: ${distanceInKm} km | Duration: ${Math.ceil(
+            durationInMinutes
+          )} mins
+              `;
 
-              updatePriceSummary(globalDistanceFee, globalTimeFee);
-              updateCarPrices();
+          updatePriceSummary(globalDistanceFee, globalTimeFee);
+          updateCarPrices();
 
-              // Add the route to the map
-              map.addSource(routeLayerId, {
-                type: "geojson",
-                data: {
-                  type: "Feature",
-                  geometry: {
-                    type: "LineString",
-                    coordinates: routeCoordinates,
-                  },
-                },
-              });
-
-              map.addLayer({
-                id: routeLayerId,
-                type: "line",
-                source: routeLayerId,
-                layout: {
-                  "line-join": "round",
-                  "line-cap": "round",
-                },
-                paint: {
-                  "line-color": "#4285F4", // Blue color for the route
-                  "line-width": 6,
-                },
-              });
-
-              // Fit the map to the bounds (zoom out and center to show the entire route)
-              var bounds = new mapboxgl.LngLatBounds();
-              routeCoordinates.forEach(function (coord) {
-                bounds.extend(coord);
-              });
-              map.fitBounds(bounds, {
-                padding: 50, // Adjust padding to avoid markers too close to map edge
-                maxZoom: 14, // Optionally set a maximum zoom level
-              });
-            } else {
-              console.error("No routes found");
-            }
+          map.addSource(routeLayerId, {
+            type: "geojson",
+            data: {
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: routeCoordinates,
+              },
+            },
           });
+
+          map.addLayer({
+            id: routeLayerId,
+            type: "line",
+            source: routeLayerId,
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#4285F4",
+              "line-width": 6,
+            },
+          });
+
+          const bounds = new mapboxgl.LngLatBounds();
+          routeCoordinates.forEach((coord) => bounds.extend(coord));
+          map.fitBounds(bounds, { padding: 50, maxZoom: 14 });
+        }
+      } else {
+        console.log("hello");
+        hoursInput.value = 1;
+        hoursInput.min = 1;
+        distanceInKm = 0;
+        updateCarPrices();
       }
     }
 
-    // Initialize autocomplete for pickup and dropoff
     autocomplete("pickup", "pickup-suggestions", "pickup");
     autocomplete("dropoff", "dropoff-suggestions", "dropoff");
+    autocomplete("additional", "additional-suggestions", "additional");
   })
   .catch((error) => {
     console.error("Error fetching Mapbox token:", error);
@@ -728,6 +754,7 @@ $(document).ready(function () {
       additionalInfo: document.getElementById("additional-info").value || "N/A",
       pickupLocation: document.getElementById("pickup").value,
       dropoffLocation: document.getElementById("dropoff").value,
+      additionalLocation: document.getElementById("additional").value || "N/A",
       pickupDate: document.getElementById("pickup-date").value,
       pickupTime: document.getElementById("pickup-time").value,
       selectedCar: document
@@ -839,8 +866,13 @@ $(document).ready(function () {
     }
   });
 
-  // Close popup on clicking "Cancel" button
+  // Close popup on clicking "Edit" button
   $("#edit-btn").on("click", function () {
+    $.magnificPopup.close();
+    sendHeightToParent(["1500px", "2200px"]);
+  });
+  // Close popup on clicking "Cancel" button
+  $("#cancel-btn").on("click", function () {
     $.magnificPopup.close();
     sendHeightToParent(["1500px", "2200px"]);
     alert("Booking cancelled!");

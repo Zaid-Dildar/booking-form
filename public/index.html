@@ -123,6 +123,23 @@
           <div class="car-option" id="car-5">
             <div class="car-option-image-container">
               <img
+                src="https://65e81151f52e248c552b-fe74cd567ea2f1228f846834bd67571e.ssl.cf1.rackcdn.com/ldm-images/2018-Toyota-Highlander-MIDNIGHT-BLACK-METALLIC.jpg"
+                alt="Mid-Size SUV"
+                style="width: 138px; height: 80px"
+              />
+            </div>
+            <p>
+              <strong>Mid-Size SUV</strong>
+              <span
+                ><i class="fas fa-user" title="Passengers"></i> 7 ,
+                <i class="fas fa-suitcase" title="Bags"></i> 8</span
+              >
+              <span class="price-Mid-Size SUV">Starting at - $150.00</span>
+            </p>
+          </div>
+          <div class="car-option" id="car-6">
+            <div class="car-option-image-container">
+              <img
                 src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
                 alt="Class Mercedes"
               />
@@ -136,7 +153,7 @@
               <span class="price-Class Mercedes">Starting at - $175.00</span>
             </p>
           </div>
-          <div class="car-option" id="car-6">
+          <div class="car-option" id="car-7">
             <div class="car-option-image-container">
               <img
                 src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
@@ -276,6 +293,20 @@
             </div>
           </div>
 
+          <!-- Row 6: Additional Location -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="additional">Additional Location (Optional) </label>
+              <input
+                type="text"
+                id="additional"
+                name="additional-location"
+                autocomplete="off"
+              />
+              <div id="additional-suggestions" class="suggestions"></div>
+            </div>
+          </div>
+
           <!-- Row 7: Additional Information -->
           <div class="form-row">
             <div class="form-group">
@@ -376,6 +407,26 @@
                 <div class="car-option" id="car-5">
                   <div class="car-option-image-container">
                     <img
+                      src="https://inv.assets.sincrod.com/ChromeColorMatch/us/WHITE_cc_2019TOS140020_01_1280_218.jpg"
+                      alt="Mid-Size SUV"
+                    />
+                  </div>
+                  <p>
+                    <strong>Mid-Size SUV</strong>
+                    <span
+                      ><i class="fas fa-user" title="Passengers"></i> 7 ,
+                      <i class="fas fa-suitcase" title="Bags"></i> 8</span
+                    >
+                    <span class="price-Mid-Size SUV"
+                      >Starting at - $150.00</span
+                    >
+                  </p>
+                </div>
+              </div>
+              <div class="swiper-slide">
+                <div class="car-option" id="car-6">
+                  <div class="car-option-image-container">
+                    <img
                       src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Class-Mercedes.jpg"
                       alt="Class Mercedes"
                     />
@@ -393,7 +444,7 @@
                 </div>
               </div>
               <div class="swiper-slide">
-                <div class="car-option" id="car-6">
+                <div class="car-option" id="car-7">
                   <div class="car-option-image-container">
                     <img
                       src="https://londonlimoservice.ca/wp-content/uploads/2021/07/Cadillac-XTS.png"
@@ -551,7 +602,10 @@
             <!-- Popup action buttons -->
             <div class="popup-actions" style="margin-top: 20px">
               <button id="confirm-btn" class="btn btn-success">Confirm</button>
-              <button id="edit-btn" class="btn btn-secondary">Cancel</button>
+              <button type="button" id="edit-btn" class="btn btn-secondary">
+                Edit
+              </button>
+              <button id="cancel-btn" class="btn btn-secondary">Cancel</button>
             </div>
           </div>
         </form>
