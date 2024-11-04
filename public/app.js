@@ -166,21 +166,25 @@ function passengersAndBagsChangeHandler() {
   }
   if (passengers.value > 6 || bags.value > 6) {
     document.getElementById("car-4").classList.add("hidden");
+    document.getElementById("car-5").classList.remove("hidden");
+
     hideSlides(
-      (index) => index === 1 || index === 4 || index === 5 || index === 6
+      (index) =>
+        index === 1 || index === 4 || index === 5 || index === 6 || index === 0
     );
   } else {
     document.getElementById("car-4").classList.remove("hidden");
-  }
-  if (passengers.value > 7 || bags.value > 8) {
-    document.getElementById("car-5").classList.add("hidden");
-    hideSlides(
-      (index) =>
-        index === 6 || index === 0 || index === 5 || index === 1 || index === 4
-    );
-  } else {
     document.getElementById("car-5").classList.remove("hidden");
   }
+  // if (passengers.value > 6 || bags.value > 8) {
+  //   document.getElementById("car-5").classList.add("hidden");
+  //   hideSlides(
+  //     (index) =>
+  //       index === 6 || index === 0 || index === 5 || index === 1 || index === 4
+  //   );
+  // } else {
+  //   document.getElementById("car-5").classList.remove("hidden");
+  // }
   if (passengers.value > 10 || bags.value > 10) {
     document.getElementById("car-2").classList.add("hidden");
     hideSlides(
