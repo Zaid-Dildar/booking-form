@@ -841,8 +841,11 @@ $(document).ready(function () {
         isValid = false;
         document.getElementById("car-option-error").innerText =
           "Please select a car.";
+        document.getElementById("car-option-error-mobile").innerText =
+          "Please select a car.";
       } else {
         document.getElementById("car-option-error").innerText = "";
+        document.getElementById("car-option-error-mobile").innerText = "";
       }
       if (
         document.getElementById("hourly-tab").classList.contains("active") &&
