@@ -173,7 +173,9 @@ h1 {
   background-color: #daa520; /* Active bullet color (e.g., blue) */
 }
 
+/* Existing styling */
 .car-option {
+  position: relative; /* Allow absolute positioning for the ribbon */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -192,7 +194,7 @@ h1 {
 
 .car-option.selected {
   border: 5px solid #daa520;
-  /*  for selected */
+  /* Border color for selected option */
 }
 
 .car-option img {
@@ -210,12 +212,52 @@ h1 {
 }
 
 .car-option p {
-  /* font-size: small; */
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 1em;
   margin: auto;
+}
+
+/* Container for the ribbon with overflow hidden */
+.ribbon-container {
+  position: absolute;
+  height: 100%;
+  width: 100%; /* Limit width to keep ribbon within boundaries */
+  overflow: hidden;
+}
+
+/* Ribbon styling */
+.featured-ribbon {
+  position: absolute;
+  top: 10px;
+  left: -55px;
+  background-color: #daa520;
+  color: white;
+  font-weight: bold;
+  padding: 0.25em 1em;
+  transform: rotate(-45deg);
+  width: 140px; /* Make it slightly larger for the tilted effect */
+  text-align: center;
+  overflow: hidden; /* Overflow hidden inside the ribbon */
+  border-radius: 4px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Scrolling text within the ribbon */
+.featured-ribbon span {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scrollText 4s linear infinite;
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .error-message {
@@ -428,6 +470,11 @@ h1 {
     right: auto;
     left: auto;
     margin: 10px;
+  }
+
+  .featured-ribbon {
+    top: 15px;
+    left: -35px;
   }
 
   /* Hide sidebar on mobile */
