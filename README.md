@@ -1,8 +1,8 @@
 # Booking Form
 
-This is a simple static website hosted on GitHub Pages. The website contains a form, map, and other interactive elements. You can view the live site at:
+This is a simple static website hosted on Vercel. The website contains a form, map, and other interactive elements. You can view the live site at:
 
-**[Live Demo](https://zaid-dildar.github.io/booking-form/)**
+**[Live Demo](https://booking-form-beta.vercel.app/)**
 
 ## Features
 
@@ -15,7 +15,7 @@ This is a simple static website hosted on GitHub Pages. The website contains a f
 
 ### Viewing the Website
 
-Simply visit the [live site](https://zaid-dildar.github.io/booking-form/), and you'll be able to view the full HTML page, complete with links and interactive elements.
+Simply visit the [live site](https://booking-form-beta.vercel.app/), and you'll be able to view the full HTML page, complete with links and interactive elements.
 
 ### Customization
 
@@ -30,9 +30,17 @@ To customize the website, you can:
 
 ```
 📦booking-form
- ┣ 📜index.html           # Main HTML file
- ┣ 📜styles.css           # Main CSS file
- ┗ 📜app.js               # Main JAVASCRIPT file
+   ┣ 📦public
+      ┣ 📜index.html           # Main HTML file
+      ┣ 📜styles.css           # Main CSS file
+      ┗ 📜app.js               # Main JAVASCRIPT file
+   ┗ 📦api
+      ┣ 📦mapbox 
+         ┣ 📜directions.js           
+         ┗ 📜geocode.js           
+      ┣ 📜create-payment-intent.js           
+      ┣ 📜mapbox-token.js           
+      ┗ 📜submit-form.js               
 ```
 ## How to Contribute
 
