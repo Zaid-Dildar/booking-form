@@ -253,10 +253,10 @@ h1 {
 
 @keyframes scrollText {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(-150%);
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(130%);
   }
 }
 
@@ -474,7 +474,7 @@ h1 {
 
   .featured-ribbon {
     top: 15px;
-    left: -35px;
+    left: -38px;
   }
 
   /* Hide sidebar on mobile */
