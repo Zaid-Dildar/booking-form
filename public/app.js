@@ -90,9 +90,9 @@ function checkTime() {
 const carPrices = {
   Sprinter: { hourly: 325, perKilometer: 5.5 },
   "Stretch SUV": { hourly: 349, perKilometer: 6.5 },
-  SUV: { hourly: 120, perKilometer: 2.55 },
+  SUV: { hourly: 150, perKilometer: 2.65 },
   "Cadillac Escalade SUV": { hourly: 210, perKilometer: 2.95 },
-  "Mid-Size SUV": { hourly: 150, perKilometer: 2.65 },
+  "Mid-Size SUV": { hourly: 120, perKilometer: 2.55 },
   "Class Mercedes": { hourly: 175, perKilometer: 2.75 },
   Sedan: { hourly: 85, perKilometer: 1.97 },
 };
