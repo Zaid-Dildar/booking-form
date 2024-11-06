@@ -2,7 +2,6 @@
 
 function sendHeightToParent(height) {
   window.top.postMessage({ type: "resize-iframe", height: height }, "*");
-  console.log("height updated");
 }
 
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
