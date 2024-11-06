@@ -172,7 +172,8 @@ function passengersAndBagsChangeHandler() {
     document.getElementById("car-4").classList.add("hidden");
 
     hideSlides(
-      (index) => index === 1 || index === 4 || index === 5 || index === 6
+      (index) =>
+        index === 1 || index === 4 || index === 5 || index === 6 || index === 0
     );
   } else {
     document.getElementById("car-4").classList.remove("hidden");
