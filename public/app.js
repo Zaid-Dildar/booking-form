@@ -159,22 +159,23 @@ function passengersAndBagsChangeHandler() {
     document.getElementById("car-6").classList.remove("hidden");
   }
   if (passengers.value > 6 || bags.value > 4) {
+    document.getElementById("car-5").classList.add("hidden");
     document.getElementById("car-3").classList.add("hidden");
-    hideSlides((index) => index === 1 || index === 6 || index === 4);
+    hideSlides(
+      (index) => index === 1 || index === 6 || index === 4 || index === 0
+    );
   } else {
+    document.getElementById("car-5").classList.remove("hidden");
     document.getElementById("car-3").classList.remove("hidden");
   }
   if (passengers.value > 6 || bags.value > 6) {
     document.getElementById("car-4").classList.add("hidden");
-    document.getElementById("car-5").classList.remove("hidden");
 
     hideSlides(
-      (index) =>
-        index === 1 || index === 4 || index === 5 || index === 6 || index === 0
+      (index) => index === 1 || index === 4 || index === 5 || index === 6
     );
   } else {
     document.getElementById("car-4").classList.remove("hidden");
-    document.getElementById("car-5").classList.remove("hidden");
   }
   // if (passengers.value > 6 || bags.value > 8) {
   //   document.getElementById("car-5").classList.add("hidden");
