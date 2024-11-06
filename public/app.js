@@ -1,7 +1,7 @@
 // Client-side JavaScript for handling the mapbox and form
 
 function sendHeightToParent(height) {
-  window.top.postMessage({ type: "resize-iframe", height: height }, "*");
+  window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
