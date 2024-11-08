@@ -877,7 +877,7 @@ $(document).ready(function () {
           },
         },
       });
-      sendHeightToParent(["800px", "800px"]);
+      sendHeightToParent(["1800px", "2800px"]);
     } else {
       sendHeightToParent(["1700px", "2500px"]);
       alert("Missing required fields!");
