@@ -477,6 +477,10 @@ h1 {
     left: -38px;
   }
 
+  .white-popup {
+    padding: 15px;
+  }
+
   /* Hide sidebar on mobile */
   .hidden-on-mobile {
     display: none;
