@@ -855,8 +855,8 @@ $(document).ready(function () {
         document.getElementById("car-option-error-mobile").innerText = "";
       }
       if (
-        (document.getElementById("pickup-time-close-error").style.display =
-          "block")
+        document.getElementById("pickup-time-close-error").style.display ==
+        "block"
       ) {
         isValid = false;
       }
