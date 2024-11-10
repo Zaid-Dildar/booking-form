@@ -85,6 +85,7 @@ function checkTime() {
     isValid = false;
     timeError.style.display = "block"; // Show error for invalid time
   } else {
+    isValid = true;
     timeError.style.display = "none"; // Hide error for valid time
   }
 }
