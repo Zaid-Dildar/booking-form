@@ -833,10 +833,10 @@ $(document).ready(function () {
       "dropoff",
     ];
 
+    isValid = true;
     requiredFields.forEach((fieldId) => {
       const field = document.getElementById(fieldId);
       const errorField = document.getElementById(fieldId + "-error");
-      isValid = true;
       if (!field.value) {
         errorField.innerText = "This field is required!";
         isValid = false;
