@@ -4,6 +4,8 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
+let isValid = true;
+
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
 let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
 
@@ -80,6 +82,7 @@ function checkTime() {
 
   // Check if the selected date and time in UTC are less than 3 hours from now
   if (selectedDateTimeUTC < threeHoursLaterUTC) {
+    isValid = false;
     timeError.style.display = "block"; // Show error for invalid time
   } else {
     timeError.style.display = "none"; // Hide error for valid time
@@ -370,7 +373,7 @@ fetch("/api/mapbox-token")
     document
       .getElementById("reserve-btn")
       .addEventListener("click", function () {
-        map.resize();
+        updatePriceSummary(globalDistanceFee, globalTimeFee);
       });
 
     function getSuggestions(query, callback) {
@@ -816,7 +819,6 @@ $(document).ready(function () {
     e.preventDefault();
 
     // Perform validation first before showing the popup
-    let isValid = true;
     const requiredFields = [
       "passengers",
       "bags",
