@@ -907,3 +907,8 @@ $(document).ready(function () {
     submitBookingForm();
   });
 });
+
+// ignore mapbox warning
+if (!window.location.hostname.includes("localhost")) {
+  console.warn = () => {}; // Overrides console.warn to ignore warnings
+}
