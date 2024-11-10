@@ -879,7 +879,7 @@ $(document).ready(function () {
       });
       sendHeightToParent([800, 800]);
     } else {
-      sendHeightToParent([1700, 2600]);
+      sendHeightToParent([1700, 2500]);
       alert("Missing required fields!");
     }
   });
