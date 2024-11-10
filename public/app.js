@@ -4,7 +4,10 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
-let isValid = true;
+// ignore mapbox warning
+if (!window.location.hostname.includes("localhost")) {
+  console.warn = () => {}; // Overrides console.warn to ignore warnings
+}
 
 let perHourRate = 0; // Example hourly rate, adjust as needed (20 currency units per hour)
 let perKilometerRate = 0; // Example rate, adjust as needed (5 currency units per kilometer)
@@ -82,10 +85,8 @@ function checkTime() {
 
   // Check if the selected date and time in UTC are less than 3 hours from now
   if (selectedDateTimeUTC < threeHoursLaterUTC) {
-    isValid = false;
     timeError.style.display = "block"; // Show error for invalid time
   } else {
-    isValid = true;
     timeError.style.display = "none"; // Hide error for valid time
   }
 }
@@ -833,7 +834,7 @@ $(document).ready(function () {
       "dropoff",
     ];
 
-    isValid = true;
+    let isValid = true;
     requiredFields.forEach((fieldId) => {
       const field = document.getElementById(fieldId);
       const errorField = document.getElementById(fieldId + "-error");
@@ -850,9 +851,14 @@ $(document).ready(function () {
         document.getElementById("car-option-error-mobile").innerText =
           "Please select a car.";
       } else {
-        isValid = true;
         document.getElementById("car-option-error").innerText = "";
         document.getElementById("car-option-error-mobile").innerText = "";
+      }
+      if (
+        (document.getElementById("pickup-time-close-error").style.display =
+          "block")
+      ) {
+        isValid = false;
       }
       if (
         document.getElementById("hourly-tab").classList.contains("active") &&
@@ -862,7 +868,6 @@ $(document).ready(function () {
           "This field is required!";
         isValid = false;
       } else {
-        isValid = true;
         document.getElementById("hours-error").innerText = "";
       }
     });
@@ -907,8 +912,3 @@ $(document).ready(function () {
     submitBookingForm();
   });
 });
-
-// ignore mapbox warning
-if (!window.location.hostname.includes("localhost")) {
-  console.warn = () => {}; // Overrides console.warn to ignore warnings
-}
