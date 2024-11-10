@@ -840,6 +840,7 @@ $(document).ready(function () {
         errorField.innerText = "This field is required!";
         isValid = false;
       } else {
+        isValid = true;
         errorField.innerText = "";
       }
       if (!document.querySelector(".car-option.selected")) {
@@ -849,6 +850,7 @@ $(document).ready(function () {
         document.getElementById("car-option-error-mobile").innerText =
           "Please select a car.";
       } else {
+        isValid = true;
         document.getElementById("car-option-error").innerText = "";
         document.getElementById("car-option-error-mobile").innerText = "";
       }
@@ -860,6 +862,7 @@ $(document).ready(function () {
           "This field is required!";
         isValid = false;
       } else {
+        isValid = true;
         document.getElementById("hours-error").innerText = "";
       }
     });
