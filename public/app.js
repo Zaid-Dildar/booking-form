@@ -877,9 +877,9 @@ $(document).ready(function () {
           },
         },
       });
-      sendHeightToParent(["50vh", "33vh"]);
+      sendHeightToParent(["800px", "800px"]);
     } else {
-      sendHeightToParent(["1700px", "2550px"]);
+      sendHeightToParent(["1700px", "2500px"]);
       alert("Missing required fields!");
     }
   });
