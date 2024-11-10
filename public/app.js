@@ -836,11 +836,11 @@ $(document).ready(function () {
     requiredFields.forEach((fieldId) => {
       const field = document.getElementById(fieldId);
       const errorField = document.getElementById(fieldId + "-error");
+      isValid = true;
       if (!field.value) {
         errorField.innerText = "This field is required!";
         isValid = false;
       } else {
-        isValid = true;
         errorField.innerText = "";
       }
       if (!document.querySelector(".car-option.selected")) {
