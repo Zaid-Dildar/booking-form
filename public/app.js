@@ -803,7 +803,7 @@ $(document).ready(function () {
       .then((data) => {
         alert("Reservation confirmed!");
         $.magnificPopup.close(); // Close the popup after successful submission
-        sendHeightToParent(["1600px", "2300px"]);
+        sendHeightToParent(["1600", "2300"]);
         document.getElementById("reservation-form").reset();
       })
       .catch((error) => {
@@ -873,13 +873,13 @@ $(document).ready(function () {
         callbacks: {
           // Send message to parent when the popup is closed
           close: function () {
-            sendHeightToParent(["1600px", "2300px"]);
+            sendHeightToParent(["1600", "2300"]);
           },
         },
       });
-      sendHeightToParent(["800px", "800px"]);
+      sendHeightToParent(["800", "800"]);
     } else {
-      sendHeightToParent(["1700px", "2500px"]);
+      sendHeightToParent(["1700", "2500"]);
       alert("Missing required fields!");
     }
   });
@@ -887,12 +887,12 @@ $(document).ready(function () {
   // Close popup on clicking "Edit" button
   $("#edit-btn").on("click", function () {
     $.magnificPopup.close();
-    sendHeightToParent(["1600px", "2300px"]);
+    sendHeightToParent(["1600", "2300"]);
   });
   // Close popup on clicking "Cancel" button
   $("#cancel-btn").on("click", function () {
     $.magnificPopup.close();
-    sendHeightToParent(["1600px", "2300px"]);
+    sendHeightToParent(["1600", "2300"]);
     alert("Booking cancelled!");
   });
 
