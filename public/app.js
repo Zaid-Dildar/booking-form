@@ -4,7 +4,7 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
-document.addEventListener("load", function () {
+window.addEventListener("load", function () {
   sendHeightToParent([1600, 2300]);
   alert("updated!");
 });
