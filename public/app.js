@@ -670,7 +670,9 @@ carOptions.forEach(function (option) {
 
 $(document).ready(function () {
   // Initialize Stripe with your publishable key
-  const stripe = Stripe("pk_test_gg8pWvMfDrdZv8wAvKcUSU8A"); // Replace with your actual publishable key
+  const stripe = Stripe(
+    "pk_test_gg8pWvMfDrdZv8wAvKcUSU8Apk_live_51QE7HvHBGZVxz4lUtGw3OAkgH0IUnVvbJt5L4avXERM1PriXgfd8hGNeiMrHQuCDmDnejKZI0TkZpuvaHhya4fBu007NxCU5pV"
+  ); // Replace with your actual publishable key
   const elements = stripe.elements();
 
   // Optionally, add some basic styling

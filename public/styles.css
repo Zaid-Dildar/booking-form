@@ -28,7 +28,7 @@ h1 {
 }
 
 body {
-  animation: fadeInUp 1s ease-out;
+  animation: fadeInUp 1s ease-in-out;
 }
 
 .description {
