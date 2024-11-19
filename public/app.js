@@ -6,6 +6,7 @@ function sendHeightToParent(height) {
 
 document.addEventListener("load", function () {
   sendHeightToParent([1600, 2300]);
+  alert("updated!");
 });
 
 // ignore mapbox warning
