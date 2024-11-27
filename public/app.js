@@ -4,9 +4,9 @@ function sendHeightToParent(height) {
   window.parent.postMessage({ type: "resize-iframe", height: height }, "*");
 }
 
-window.addEventListener("load", function () {
-  sendHeightToParent([1600, 2300]);
-});
+// window.addEventListener("load", function () {
+//   sendHeightToParent([1600, 2300]);
+// });
 
 // ignore mapbox warning
 if (!window.location.hostname.includes("localhost")) {
