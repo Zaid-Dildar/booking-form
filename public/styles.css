@@ -7,7 +7,7 @@ body {
   background-color: #1c1c1c;
   color: white;
   margin: 0;
-  position: relative;
+  animation: fadeInUp 1s ease-in-out;
 }
 @keyframes fadeInUp {
   from {
@@ -30,7 +30,6 @@ h1 {
   font-size: 16px;
   text-align: center;
   margin-bottom: 40px;
-  animation: fadeInUp 1s ease-in-out;
 }
 
 /* .form-container {
@@ -48,7 +47,6 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 20px; /* Adds space between sidebar and form */
-  animation: fadeInUp 1s ease-in-out;
 }
 
 .car-options-sidebar {
