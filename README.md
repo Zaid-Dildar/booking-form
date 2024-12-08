@@ -9,7 +9,7 @@ This is a simple static website hosted on Vercel. The website contains a form, m
 - Responsive design
 - Custom fonts and styles
 - Embedded form
-- Hosted via GitHub Pages
+- Hosted via Vercel.
 
 ## How to Use
 
